@@ -11,6 +11,8 @@
 		B616EEF9280826D1005A15CC /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B616EEF8280826D1005A15CC /* ContentViewModel.swift */; };
 		B616EEFB2808272A005A15CC /* ContactDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B616EEFA2808272A005A15CC /* ContactDetailsView.swift */; };
 		B616EEFD28082A05005A15CC /* ContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B616EEFC28082A05005A15CC /* ContactViewModel.swift */; };
+		B63F68E7280DE1EA00B41D92 /* LabeledUIValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63F68E6280DE1EA00B41D92 /* LabeledUIValue.swift */; };
+		B63F68E9280DE31000B41D92 /* ContactComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63F68E8280DE31000B41D92 /* ContactComponents.swift */; };
 		B69653F128070E8A004C3C6C /* ContactImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69653F028070E8A004C3C6C /* ContactImporter.swift */; };
 		B69653F328072160004C3C6C /* ContactStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69653F228072160004C3C6C /* ContactStore.swift */; };
 		B69653F528073AE0004C3C6C /* ParallelMergeSorter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69653F428073AE0004C3C6C /* ParallelMergeSorter.swift */; };
@@ -33,6 +35,8 @@
 		B616EEF8280826D1005A15CC /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		B616EEFA2808272A005A15CC /* ContactDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDetailsView.swift; sourceTree = "<group>"; };
 		B616EEFC28082A05005A15CC /* ContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactViewModel.swift; sourceTree = "<group>"; };
+		B63F68E6280DE1EA00B41D92 /* LabeledUIValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledUIValue.swift; sourceTree = "<group>"; };
+		B63F68E8280DE31000B41D92 /* ContactComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactComponents.swift; sourceTree = "<group>"; };
 		B69653F028070E8A004C3C6C /* ContactImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactImporter.swift; sourceTree = "<group>"; };
 		B69653F228072160004C3C6C /* ContactStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStore.swift; sourceTree = "<group>"; };
 		B69653F428073AE0004C3C6C /* ParallelMergeSorter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParallelMergeSorter.swift; sourceTree = "<group>"; };
@@ -67,6 +71,7 @@
 			children = (
 				B616EEF8280826D1005A15CC /* ContentViewModel.swift */,
 				B616EEFC28082A05005A15CC /* ContactViewModel.swift */,
+				B63F68E6280DE1EA00B41D92 /* LabeledUIValue.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -118,6 +123,7 @@
 				B699377A28083C66007ABD98 /* AddContactView.swift */,
 				B699377C28085783007ABD98 /* LabelPickerView.swift */,
 				B699377E2808A30E007ABD98 /* EditContactView.swift */,
+				B63F68E8280DE31000B41D92 /* ContactComponents.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -233,6 +239,8 @@
 				B699377B28083C66007ABD98 /* AddContactView.swift in Sources */,
 				B69BB1192806EA3B00323DBD /* ContentView.swift in Sources */,
 				B69BB1272806EC8900323DBD /* ContactGenerator.swift in Sources */,
+				B63F68E9280DE31000B41D92 /* ContactComponents.swift in Sources */,
+				B63F68E7280DE1EA00B41D92 /* LabeledUIValue.swift in Sources */,
 				B69653F128070E8A004C3C6C /* ContactImporter.swift in Sources */,
 				B616EEF9280826D1005A15CC /* ContentViewModel.swift in Sources */,
 				B616EEF628082645005A15CC /* ContactItemView.swift in Sources */,

@@ -22,11 +22,16 @@ class ContactStore {
     private let readQueue: DispatchQueue
     private let writeQueue: DispatchQueue
     private let targetQueue: DispatchQueue
+    private var timer: DispatchSourceTimer?
+    
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
+    
     private var contactMap = [String : Contact]()
-    private var isLoaded = false
     private var listeners = [ListenerWrapper]()
+    
+    private var isLoaded = false
+    private var hasContactsChanged = false
     
     private struct ListenerWrapper {
         weak var listener: ContactStoreListener?
@@ -71,9 +76,27 @@ class ContactStore {
     
     func load() {
         readQueue.async { [self] in
-            if restoreContacts() {
-                notifyListenersContactsUpdated()
+            guard !isLoaded else {
+                return
             }
+            
+            defer {
+                isLoaded = true
+            }
+            
+            guard let fileUrl = getOrCreateFile() else {
+                return
+            }
+
+            startContactSaver(fileUrl)
+            
+            guard let contents = FileManager.default.contents(atPath: fileUrl.path) else {
+                return
+            }
+            
+            contactMap = (try? decoder.decode([String : Contact].self, from: contents)) ?? [:]
+            
+            notifyListenersContactsUpdated()
         }
     }
     
@@ -89,7 +112,9 @@ class ContactStore {
     
     func storeContacts(_ contacts: [Contact]) {
         writeQueue.async { [self] in
-            restoreContacts()
+            guard isLoaded else {
+                fatalError()
+            }
             
             var updated = false
             
@@ -106,7 +131,7 @@ class ContactStore {
             }
             
             if updated {
-                saveContacts()
+                hasContactsChanged = true
                 notifyListenersContactsUpdated()
             }
         }
@@ -118,7 +143,9 @@ class ContactStore {
     
     func deleteContacts(_ identifiers: Set<String>) {
         writeQueue.async { [self] in
-            restoreContacts()
+            guard isLoaded else {
+                fatalError()
+            }
             
             var deleted = false
             
@@ -128,7 +155,7 @@ class ContactStore {
             }
             
             if deleted {
-                saveContacts()
+                hasContactsChanged = true
                 notifyListenersContactsUpdated()
             }
         }
@@ -144,7 +171,7 @@ class ContactStore {
             isLoaded = true
         }
         
-        guard let fileUrl = self.getFileUrlIfExists() else {
+        guard let fileUrl = self.getOrCreateFile() else {
             return true
         }
         
@@ -157,16 +184,31 @@ class ContactStore {
         return true
     }
     
-    private func saveContacts() {
-        guard let fileUrl = getOrCreateFile() else {
+    private func startContactSaver(_ fileUrl: URL) {
+        guard timer == nil else {
             return
         }
         
-        do {
-            let data = try encoder.encode(contactMap)
-            try data.write(to: fileUrl, options: .atomic)
-        } catch {
+        timer = DispatchSource.makeTimerSource(queue: writeQueue)
+        timer!.schedule(deadline: .now() + 2, repeating: .seconds(2), leeway: .milliseconds(500))
+        timer!.setEventHandler { [self] in
+            guard hasContactsChanged else {
+                print("HAS CHANGED?")
+                return
+            }
+            
+            print("CHANGED!!!!")
+            
+            hasContactsChanged = false
+                        
+            do {
+                let data = try encoder.encode(contactMap)
+                try data.write(to: fileUrl)
+            } catch {
+            }
         }
+        
+        timer!.resume()
     }
     
     private func notifyListenersContactsUpdated() {
@@ -188,14 +230,6 @@ class ContactStore {
         }
         
         return fileUrl
-    }
-    
-    private func getFileUrlIfExists() -> URL? {
-        guard let fileUrl = getFileUrl() else {
-            return nil
-        }
-        
-        return FileManager.default.fileExists(atPath: fileUrl.path) ? fileUrl : nil
     }
     
     private func getFileUrl() -> URL? {
