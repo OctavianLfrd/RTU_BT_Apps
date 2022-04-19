@@ -13,6 +13,7 @@
 		B616EEFD28082A05005A15CC /* ContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B616EEFC28082A05005A15CC /* ContactViewModel.swift */; };
 		B63F68E7280DE1EA00B41D92 /* LabeledUIValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63F68E6280DE1EA00B41D92 /* LabeledUIValue.swift */; };
 		B63F68E9280DE31000B41D92 /* ContactComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63F68E8280DE31000B41D92 /* ContactComponents.swift */; };
+		B67181A5280F3F5C008CFB14 /* MetricObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67181A4280F3F5C008CFB14 /* MetricObserver.swift */; };
 		B69653F128070E8A004C3C6C /* ContactImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69653F028070E8A004C3C6C /* ContactImporter.swift */; };
 		B69653F328072160004C3C6C /* ContactStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69653F228072160004C3C6C /* ContactStore.swift */; };
 		B69653F528073AE0004C3C6C /* ParallelMergeSorter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69653F428073AE0004C3C6C /* ParallelMergeSorter.swift */; };
@@ -28,6 +29,8 @@
 		B69BB1342806ED7100323DBD /* UserResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69BB1332806ED7100323DBD /* UserResponse.swift */; };
 		B69BB1372806EDDF00323DBD /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69BB1362806EDDF00323DBD /* Contact.swift */; };
 		B69BB1412806EEDA00323DBD /* LabeledValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69BB1402806EEDA00323DBD /* LabeledValue.swift */; };
+		B6BB198E280F170E00D40AE3 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BB198D280F170E00D40AE3 /* Logger.swift */; };
+		B6BB1990280F1E0900D40AE3 /* FileArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6BB198F280F1E0900D40AE3 /* FileArchiver.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +40,7 @@
 		B616EEFC28082A05005A15CC /* ContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactViewModel.swift; sourceTree = "<group>"; };
 		B63F68E6280DE1EA00B41D92 /* LabeledUIValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledUIValue.swift; sourceTree = "<group>"; };
 		B63F68E8280DE31000B41D92 /* ContactComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactComponents.swift; sourceTree = "<group>"; };
+		B67181A4280F3F5C008CFB14 /* MetricObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricObserver.swift; sourceTree = "<group>"; };
 		B69653F028070E8A004C3C6C /* ContactImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactImporter.swift; sourceTree = "<group>"; };
 		B69653F228072160004C3C6C /* ContactStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStore.swift; sourceTree = "<group>"; };
 		B69653F428073AE0004C3C6C /* ParallelMergeSorter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParallelMergeSorter.swift; sourceTree = "<group>"; };
@@ -53,6 +57,8 @@
 		B69BB1332806ED7100323DBD /* UserResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserResponse.swift; sourceTree = "<group>"; };
 		B69BB1362806EDDF00323DBD /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		B69BB1402806EEDA00323DBD /* LabeledValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledValue.swift; sourceTree = "<group>"; };
+		B6BB198D280F170E00D40AE3 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		B6BB198F280F1E0900D40AE3 /* FileArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileArchiver.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,7 +141,10 @@
 				B69653F028070E8A004C3C6C /* ContactImporter.swift */,
 				B69653F228072160004C3C6C /* ContactStore.swift */,
 				B69653F428073AE0004C3C6C /* ParallelMergeSorter.swift */,
+				B6BB198D280F170E00D40AE3 /* Logger.swift */,
 				B69BB1302806ED4700323DBD /* Model */,
+				B6BB198F280F1E0900D40AE3 /* FileArchiver.swift */,
+				B67181A4280F3F5C008CFB14 /* MetricObserver.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -233,16 +242,19 @@
 				B699377D28085783007ABD98 /* LabelPickerView.swift in Sources */,
 				B69BB1412806EEDA00323DBD /* LabeledValue.swift in Sources */,
 				B69653F528073AE0004C3C6C /* ParallelMergeSorter.swift in Sources */,
+				B67181A5280F3F5C008CFB14 /* MetricObserver.swift in Sources */,
 				B699377F2808A30E007ABD98 /* EditContactView.swift in Sources */,
 				B69BB1342806ED7100323DBD /* UserResponse.swift in Sources */,
 				B69BB1322806ED5600323DBD /* User.swift in Sources */,
 				B699377B28083C66007ABD98 /* AddContactView.swift in Sources */,
 				B69BB1192806EA3B00323DBD /* ContentView.swift in Sources */,
+				B6BB1990280F1E0900D40AE3 /* FileArchiver.swift in Sources */,
 				B69BB1272806EC8900323DBD /* ContactGenerator.swift in Sources */,
 				B63F68E9280DE31000B41D92 /* ContactComponents.swift in Sources */,
 				B63F68E7280DE1EA00B41D92 /* LabeledUIValue.swift in Sources */,
 				B69653F128070E8A004C3C6C /* ContactImporter.swift in Sources */,
 				B616EEF9280826D1005A15CC /* ContentViewModel.swift in Sources */,
+				B6BB198E280F170E00D40AE3 /* Logger.swift in Sources */,
 				B616EEF628082645005A15CC /* ContactItemView.swift in Sources */,
 				B616EEFD28082A05005A15CC /* ContactViewModel.swift in Sources */,
 				B69653F328072160004C3C6C /* ContactStore.swift in Sources */,

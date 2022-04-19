@@ -31,16 +31,14 @@ struct ContentView: View {
     
     private func buildLoadedContent() -> some View {
         VStack {
-            List {
-                ForEach(viewModel.contacts) { contact in
-                    NavigationLink {
-                        ContactDetailsView(viewModel: ContactViewModel.shared(for: contact))
-                    } label: {
-                        ContactItemView(contact)
-                    }
+            List(viewModel.contacts) { contact in
+                NavigationLink {
+                    ContactDetailsView(viewModel: ContactViewModel.shared(for: contact))
+                } label: {
+                    ContactItemView(contact)
                 }
             }
-            
+                
             NavigationLink(isActive: $isAddContactModeActive) {
                 AddContactView()
             } label: {
@@ -111,6 +109,9 @@ struct ContentView: View {
             buildContextMenuButton("Generate contacts", icon: "person.crop.rectangle.stack") {
                 viewModel.generateContacts()
             }
+            buildContextMenuButton("Export app contents", icon: "square.and.arrow.up") {
+                viewModel.exportAppContents()
+            }
 
             Divider()
             
@@ -123,6 +124,9 @@ struct ContentView: View {
                 }
                 buildContextMenuButton("Last name", icon: viewModel.sortType == .lastName ? "checkmark" : nil) {
                     viewModel.updateSortType(.lastName)
+                }
+                buildContextMenuButton("Random", icon: viewModel.sortType == .random ? "checkmark" : nil) {
+                    viewModel.updateSortType(.random)
                 }
             } label: {
                 Image(systemName: "arrow.up.arrow.down.circle")
@@ -155,8 +159,6 @@ struct ContentView: View {
                 .padding(EdgeInsets(top: 8, leading: 8, bottom: 8, trailing: 8))
         }
     }
-    
-    
 }
 
 struct ContentView_Previews: PreviewProvider {

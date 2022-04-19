@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 
 class ContentViewModel : ObservableObject {
@@ -51,6 +52,27 @@ class ContentViewModel : ObservableObject {
         }
     }
     
+    func exportAppContents() {
+        FileArchiver.shared.archive(Logger(), ContactStore.shared, MetricObserver.shared) { url in
+            guard let url = url else {
+                return
+            }
+            
+            DispatchQueue.main.async { [weak self] in
+                guard
+                    let _ = self,
+                    let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+                else {
+                    return
+                }
+                
+                let activityViewController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+                
+                windowScene.keyWindow?.rootViewController?.present(activityViewController, animated: true, completion: nil)
+            }
+        }
+    }
+    
     func updateSortType(_ sortType: SortType) {
         guard self.sortType != sortType else {
             return
@@ -66,13 +88,19 @@ class ContentViewModel : ObservableObject {
     
     private func sortContacts(_ contacts: [Contact], completion: @escaping ([Contact]) -> Void) {
         self.sortCancellationHandle?.cancel()
-        self.sortCancellationHandle = contactSorter.sort(contacts, comparator: self.getSortComparator()) { contacts in
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else {
-                    return
+        self.sortCancellationHandle = nil
+        
+        if sortType == .random {
+            completion(contacts.shuffled())
+        } else {
+            self.sortCancellationHandle = contactSorter.sort(contacts, comparator: self.getSortComparator()) { contacts in
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else {
+                        return
+                    }
+                    self.sortCancellationHandle = nil
+                    completion(contacts)
                 }
-                self.sortCancellationHandle = nil
-                completion(contacts)
             }
         }
     }
@@ -85,6 +113,8 @@ class ContentViewModel : ObservableObject {
             return { c1, c2 in c1.firstName.lowercased() <= c2.firstName.lowercased() }
         case .lastName:
             return { c1, c2 in c1.lastName.lowercased() <= c2.lastName.lowercased() }
+        case .random:
+            fatalError("Unsupported sort type")
         }
     }
     
@@ -92,6 +122,7 @@ class ContentViewModel : ObservableObject {
         case auto
         case firstName
         case lastName
+        case random
     }
 }
 
@@ -108,7 +139,7 @@ extension ContentViewModel : ContactStoreListener {
                         return
                     }
                     
-                    if self.contacts.isEmpty {
+                    if !self.contacts.isEmpty {
                         self.isLoading = false
                     }
                     

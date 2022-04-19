@@ -14,8 +14,8 @@ class ParallelMergeSorter<T> {
     
     private let queue: DispatchQueue
     
-    init(_ queue: DispatchQueue?) {
-        self.queue = queue ?? DispatchQueue(label: "ParallelMergeSorter.Queue", qos: .utility, attributes: .concurrent, target: .global(qos: .utility))
+    init(_ sortQueue: DispatchQueue? = nil) {
+        self.queue = sortQueue ?? DispatchQueue(label: "ParallelMergeSorter.Queue", qos: .utility, attributes: .concurrent, target: .global(qos: .utility))
     }
     
     func sort(_ array: [T], parallelismLevel: Int = ProcessInfo.processInfo.processorCount, comparator: @escaping Comparator, completion: @escaping ([T]) -> Void) -> CancellationHandle {
@@ -24,7 +24,9 @@ class ParallelMergeSorter<T> {
         
         let limit = max(parallelismLevel, chunksEqual ? (array.count / parallelismLevel) : (array.count / (parallelismLevel - 1)))
 
-        var workItems = [DispatchWorkItem]()
+        let completionWorkItem = DispatchWorkItem {
+            completion(array)
+        }
         
         var i = 0
         while i < array.count {
@@ -32,31 +34,25 @@ class ParallelMergeSorter<T> {
             let remaining = array.count - i
             let end = remaining < limit ? (i + remaining - 1) : (i + limit - 1)
             
-            var workItem: DispatchWorkItem!
-            workItem = DispatchWorkItem { [weak self] in
-                guard let self = self, !workItem.isCancelled else {
+            queue.async { [weak self] in
+                guard let self = self, !completionWorkItem.isCancelled else {
                     return
                 }
-                
-                self.mergeSort(&array, begin: begin, end: end, comparator: comparator, workItem: workItem)
+
+                self.mergeSort(&array, begin: begin, end: end, comparator: comparator, isCancelled: completionWorkItem.isCancelled)
             }
-            
-            workItems.append(workItem)
-            
-            queue.async(execute: workItem)
             
             i += limit
         }
         
-        var barrierWorkItem: DispatchWorkItem!
-        barrierWorkItem = DispatchWorkItem(flags: .barrier) { [weak self] in
-            guard let self = self, !barrierWorkItem.isCancelled else {
+        queue.async(execute: DispatchWorkItem(flags: .barrier) { [weak self] in
+            guard let self = self, !completionWorkItem.isCancelled else {
                 return
             }
             
             var i = 0
             while i < array.count {
-                guard !barrierWorkItem.isCancelled else {
+                guard !completionWorkItem.isCancelled else {
                     return
                 }
                 
@@ -64,39 +60,31 @@ class ParallelMergeSorter<T> {
                 let remaining = array.count - i
                 let end = remaining < limit ? (i + remaining - 1) : (i + limit - 1)
                 
-                self.merge(&array, begin: 0, middle: middle, end: end, comparator: comparator, workItem: barrierWorkItem)
+                self.merge(&array, begin: 0, middle: middle, end: end, comparator: comparator, isCancelled: completionWorkItem.isCancelled)
                 
                 i += limit
             }
             
-            guard !barrierWorkItem.isCancelled else {
-                return
-            }
-            
-            completion(array)
-        }
+            completionWorkItem.perform()
+        })
         
-        workItems.append(barrierWorkItem)
-        
-        queue.async(execute: barrierWorkItem)
-        
-        return CancellationHandle(workItems)
+        return CancellationHandle(completionWorkItem)
     }
     
-    private func mergeSort(_ array: inout [T], begin: Int, end: Int, comparator: Comparator, workItem: DispatchWorkItem) {
-        guard begin < end, !workItem.isCancelled else {
+    private func mergeSort(_ array: inout [T], begin: Int, end: Int, comparator: Comparator, isCancelled: @autoclosure () -> Bool) {
+        guard begin < end, !isCancelled() else {
             return
         }
         
         let middle = (begin + end) / 2
         
-        mergeSort(&array, begin: begin, end: middle, comparator: comparator, workItem: workItem)
-        mergeSort(&array, begin: middle + 1, end: end, comparator: comparator, workItem: workItem)
+        mergeSort(&array, begin: begin, end: middle, comparator: comparator, isCancelled: isCancelled())
+        mergeSort(&array, begin: middle + 1, end: end, comparator: comparator, isCancelled: isCancelled())
         
-        merge(&array, begin: begin, middle: middle, end: end, comparator: comparator, workItem: workItem)
+        merge(&array, begin: begin, middle: middle, end: end, comparator: comparator, isCancelled: isCancelled())
     }
     
-    private func merge(_ array: inout [T], begin: Int, middle: Int, end: Int, comparator: Comparator, workItem: DispatchWorkItem) {
+    private func merge(_ array: inout [T], begin: Int, middle: Int, end: Int, comparator: Comparator, isCancelled: @autoclosure () -> Bool) {
         var temp = Array<T?>.init(repeating: nil, count: end - begin + 1)
         
         var i = begin
@@ -104,7 +92,7 @@ class ParallelMergeSorter<T> {
         var k = 0
         
         while i <= middle && j <= end {
-            guard !workItem.isCancelled else {
+            guard !isCancelled() else {
                 return
             }
             
@@ -119,7 +107,7 @@ class ParallelMergeSorter<T> {
         }
         
         while i <= middle {
-            guard !workItem.isCancelled else {
+            guard !isCancelled() else {
                 return
             }
             
@@ -129,7 +117,7 @@ class ParallelMergeSorter<T> {
         }
         
         while j <= end {
-            guard !workItem.isCancelled else {
+            guard !isCancelled() else {
                 return
             }
             
@@ -142,7 +130,7 @@ class ParallelMergeSorter<T> {
         k = 0
         
         while i <= end {
-            guard !workItem.isCancelled else {
+            guard !isCancelled() else {
                 return
             }
             
@@ -152,18 +140,16 @@ class ParallelMergeSorter<T> {
         }
     }
     
-    class CancellationHandle {
+    struct CancellationHandle {
         
-        private let workItems: [DispatchWorkItem]
+        private let workItem: DispatchWorkItem
         
-        fileprivate init(_ workItems: [DispatchWorkItem]) {
-            self.workItems = workItems
+        fileprivate init(_ workItem: DispatchWorkItem) {
+            self.workItem = workItem
         }
         
         func cancel() {
-            workItems.forEach {
-                $0.cancel()
-            }
+            workItem.cancel()
         }
     }
 }

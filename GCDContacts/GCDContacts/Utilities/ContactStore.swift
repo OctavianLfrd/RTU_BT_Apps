@@ -76,7 +76,10 @@ class ContactStore {
     
     func load() {
         readQueue.async { [self] in
+            Logger.i("Trying to load contacts from persistent storage")
+            
             guard !isLoaded else {
+                Logger.v("Contacts already loaded")
                 return
             }
             
@@ -85,16 +88,20 @@ class ContactStore {
             }
             
             guard let fileUrl = getOrCreateFile() else {
+                Logger.e("getOrCreateFile() returned nil while loading contacts")
                 return
             }
 
             startContactSaver(fileUrl)
             
             guard let contents = FileManager.default.contents(atPath: fileUrl.path) else {
+                Logger.e("Contact file contents are nil")
                 return
             }
             
             contactMap = (try? decoder.decode([String : Contact].self, from: contents)) ?? [:]
+            
+            Logger.i("Contacts are successfully loaded")
             
             notifyListenersContactsUpdated()
         }
@@ -131,6 +138,7 @@ class ContactStore {
             }
             
             if updated {
+                Logger.i("Stored contact updates")
                 hasContactsChanged = true
                 notifyListenersContactsUpdated()
             }
@@ -155,33 +163,11 @@ class ContactStore {
             }
             
             if deleted {
+                Logger.i("Deleted some contacts")
                 hasContactsChanged = true
                 notifyListenersContactsUpdated()
             }
         }
-    }
-    
-    @discardableResult
-    private func restoreContacts() -> Bool {
-        guard !isLoaded else {
-            return false
-        }
-        
-        defer {
-            isLoaded = true
-        }
-        
-        guard let fileUrl = self.getOrCreateFile() else {
-            return true
-        }
-        
-        guard let contents = FileManager.default.contents(atPath: fileUrl.path) else {
-            return true
-        }
-        
-        contactMap = (try? decoder.decode([String : Contact].self, from: contents)) ?? [:]
-        
-        return true
     }
     
     private func startContactSaver(_ fileUrl: URL) {
@@ -189,22 +175,27 @@ class ContactStore {
             return
         }
         
+        Logger.i("Starting contact saver")
+        
         timer = DispatchSource.makeTimerSource(queue: writeQueue)
         timer!.schedule(deadline: .now() + 2, repeating: .seconds(2), leeway: .milliseconds(500))
         timer!.setEventHandler { [self] in
+            Logger.v("Cheching for contact updates")
+            
             guard hasContactsChanged else {
-                print("HAS CHANGED?")
                 return
             }
             
-            print("CHANGED!!!!")
+            Logger.i("Contacts changed, storing changes to persistent storage")
             
             hasContactsChanged = false
                         
             do {
                 let data = try encoder.encode(contactMap)
                 try data.write(to: fileUrl)
+                Logger.i("Contact changes stored to persistent storage successfully")
             } catch {
+                Logger.e("Failed to store contact changes to persistent storage [error=\(error)]")
             }
         }
         
@@ -238,5 +229,14 @@ class ContactStore {
         }
         
         return documentsDirectory.appendingPathComponent(Self.fileName).appendingPathExtension(Self.fileExtension)
+    }
+}
+
+extension ContactStore : Archivable {
+    
+    func getArchivableUrl(_ completion: @escaping (URL?) -> Void) {
+        readQueue.async { [self] in
+            completion(getFileUrl())
+        }
     }
 }

@@ -9,6 +9,11 @@ import SwiftUI
 
 @main
 struct GCDContactsApp: App {
+    
+    init() {
+        MetricObserver.shared.start()
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

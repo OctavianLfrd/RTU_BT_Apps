@@ -17,7 +17,8 @@ class ContactGenerator {
     private static let maxConcurrentRequests = 3
     
     private var activeRequestCount = 0
-    private var workingQueue = DispatchQueue(label: "ContactGenerator.Working", qos: .userInteractive, target: .global(qos: .userInteractive))
+    private var totalRequestCount = 0
+    private var workingQueue = DispatchQueue(label: "ContactGenerator.Working", qos: .userInitiated, target: .global(qos: .userInitiated))
     private var pendingRequests: [PendingRequest] = []
     
     private init() {
@@ -41,6 +42,11 @@ class ContactGenerator {
         }
         
         activeRequestCount += 1
+        totalRequestCount += 1
+        
+        let currentRequest = totalRequestCount
+        
+        Logger.i("Contact generation[\(currentRequest)] started [count=\(count)]")
         
         URLSession.shared.dataTask(with: request) { [self] data, response, error in
             
@@ -61,14 +67,17 @@ class ContactGenerator {
                 response.statusCode == 200,
                 error == nil
             else {
+                Logger.e("Contact generation[\(currentRequest)] request failed [hasData=\(data != nil), isResponseValid=\((response as? HTTPURLResponse)?.statusCode == 200), error=\(String(describing: error))]")
                 complete(.requestFailed)
                 return
             }
             
             do {
                 let userResponse = try JSONDecoder().decode(UserResponse.self, from: data)
+                Logger.i("Contact generation[\(currentRequest)] succeeded")
                 complete(.success(contacts: userResponse.users.map { Contact($0) }))
             } catch {
+                Logger.i("Contact generation[\(currentRequest)] contact parsing failed \(error)")
                 complete(.parsingFailed)
             }
         }

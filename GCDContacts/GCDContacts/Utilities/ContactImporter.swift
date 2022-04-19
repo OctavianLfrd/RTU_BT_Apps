@@ -15,34 +15,44 @@ class ContactImporter {
     
     static let shared = ContactImporter()
     
-    private let queue = DispatchQueue(label: "ContactImporter", qos: .userInteractive, target: .global(qos: .userInteractive))
+    private let queue = DispatchQueue(label: "ContactImporter", qos: .userInitiated, target: .global(qos: .userInitiated))
     
     private init() {
     }
     
     func importContacts(completion: @escaping ImportCompletion) {
-        switch CNContactStore.authorizationStatus(for: .contacts) {
+        Logger.i("Contact import started")
+        
+        let authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
+        
+        switch authorizationStatus {
         case .authorized:
+            Logger.i("Contact import authorized, proceeding")
             queue.async { [self] in
                 _importContacts(CNContactStore(), completion: completion)
             }
             break
         case .notDetermined:
+            Logger.i("Contact import authorization status notDetermined, requesting permission")
             let contactStore = CNContactStore()
             contactStore.requestAccess(for: .contacts) { [self] granted, error in
                 guard granted && error == nil else {
+                    Logger.v("Contact import permission denied [granted=\(granted), error=\(String(describing: error))]")
                     completion(.permissionDeniedExplicitly)
                     return
                 }
                 
                 queue.async { [self] in
+                    Logger.i("Contact import permission granted, importing contacts")
                     _importContacts(contactStore, completion: completion)
                 }
             }
         case .denied,
              .restricted:
+            Logger.v("Contact import permission not granted [status=\(authorizationStatus.rawValue)]")
             completion(.permissionDenied)
         @unknown default:
+            Logger.e("Contact import permission status unknown")
             completion(.permissionDenied)
         }
     }
@@ -65,8 +75,10 @@ class ContactImporter {
                 contacts.append(Contact(contact))
             }
             
+            Logger.i("Contact import succeeded")
             completion(.success(contacts: contacts))
         } catch {
+            Logger.e("Contact import failed [error=\(error)]")
             completion(.failed)
         }
     }
