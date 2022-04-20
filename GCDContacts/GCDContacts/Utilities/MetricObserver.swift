@@ -13,6 +13,25 @@ class MetricObserver : NSObject {
     
     static let shared = MetricObserver()
     
+    
+    static let parallelSortingLogHandle = MXMetricManager.makeLogHandle(category: "ParallelSorting")
+    static let contactOperationsLogHandle = MXMetricManager.makeLogHandle(category: "ContactOperations")
+    static let loggerLogHandle = MXMetricManager.makeLogHandle(category: "Logger")
+    static let fileExportLogHandle = MXMetricManager.makeLogHandle(category: "FileExport")
+    
+    
+    static let contactSortingSignpostName: StaticString = "ContactSorting"
+    static let contactImportSignpostName: StaticString = "ContactImport"
+    static let contactGenerationSignpostName: StaticString = "ContactGeneration"
+    static let contactStoreLoadingSignpostName: StaticString = "ContactStoreLoading"
+    static let contactStoreFetching: StaticString = "ContactStoreFetching"
+    static let contactStoreStoring: StaticString = "ContactStoreStoring"
+    static let contactStoreDeleting: StaticString = "ContactStoreDeleting"
+    static let contactStoreTimerFrequency: StaticString = "ContactStoreTimerFrequency"
+    static let loggerWriteSignpostName: StaticString = "LoggerWrite"
+    static let fileExportSignpostName: StaticString = "FileExport"
+    
+    
     private static let mainDirectoryName = "MetricKit"
     private static let metricsDirectoryName = "Metrics"
     private static let diagnosticsDirectoryName = "Diagnostics"

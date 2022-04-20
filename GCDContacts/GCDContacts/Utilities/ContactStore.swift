@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MetricKit
 
 
 protocol ContactStoreListener : AnyObject {
@@ -75,7 +76,13 @@ class ContactStore {
     }
     
     func load() {
+        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
+        
         readQueue.async { [self] in
+            defer {
+                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
+            }
+            
             Logger.i("Trying to load contacts from persistent storage")
             
             guard !isLoaded else {
@@ -108,7 +115,13 @@ class ContactStore {
     }
     
     func getContacts(_ completion: @escaping ([Contact]) -> Void) {
+        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreFetching)
+        
         readQueue.async { [self] in
+            defer {
+                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreFetching)
+            }
+            
             completion(Array(contactMap.values))
         }
     }
@@ -118,7 +131,13 @@ class ContactStore {
     }
     
     func storeContacts(_ contacts: [Contact]) {
+        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
+        
         writeQueue.async { [self] in
+            defer {
+                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
+            }
+            
             guard isLoaded else {
                 fatalError()
             }
@@ -150,7 +169,13 @@ class ContactStore {
     }
     
     func deleteContacts(_ identifiers: Set<String>) {
+        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreDeleting)
+        
         writeQueue.async { [self] in
+            defer {
+                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreDeleting)
+            }
+            
             guard isLoaded else {
                 fatalError()
             }
@@ -180,6 +205,13 @@ class ContactStore {
         timer = DispatchSource.makeTimerSource(queue: writeQueue)
         timer!.schedule(deadline: .now() + 2, repeating: .seconds(2), leeway: .milliseconds(500))
         timer!.setEventHandler { [self] in
+            
+            mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreTimerFrequency)
+            
+            defer {
+                mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreTimerFrequency)
+            }
+            
             Logger.v("Cheching for contact updates")
             
             guard hasContactsChanged else {

@@ -74,7 +74,10 @@ class FileArchiver {
     }
     
     private func archiveContent(_ url: URL) -> URL? {
-        let fileName = "App contents (\(ProcessInfo.processInfo.globallyUniqueString))"
+        let appName = Bundle.main.infoDictionary![kCFBundleNameKey as String]!
+        let uniqueString = ProcessInfo.processInfo.globallyUniqueString
+        let fileName = "\(appName) files (\(uniqueString))"
+        
         var resultFile: URL? = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(fileName)
         var error: NSError?
         

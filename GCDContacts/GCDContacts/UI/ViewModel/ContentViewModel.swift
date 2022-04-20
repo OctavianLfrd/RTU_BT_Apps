@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import MetricKit
 
 
 class ContentViewModel : ObservableObject {
@@ -53,7 +54,13 @@ class ContentViewModel : ObservableObject {
     }
     
     func exportAppContents() {
+        mxSignpost(.begin, log: MetricObserver.fileExportLogHandle, name: MetricObserver.fileExportSignpostName)
+        
         FileArchiver.shared.archive(Logger(), ContactStore.shared, MetricObserver.shared) { url in
+            defer {
+                mxSignpost(.end, log: MetricObserver.fileExportLogHandle, name: MetricObserver.fileExportSignpostName)
+            }
+            
             guard let url = url else {
                 return
             }
@@ -93,11 +100,18 @@ class ContentViewModel : ObservableObject {
         if sortType == .random {
             completion(contacts.shuffled())
         } else {
+            
+            mxSignpost(.begin, log: MetricObserver.parallelSortingLogHandle, name: MetricObserver.contactSortingSignpostName)
+            
             self.sortCancellationHandle = contactSorter.sort(contacts, comparator: self.getSortComparator()) { contacts in
                 DispatchQueue.main.async { [weak self] in
+                    
+                    mxSignpost(.end, log: MetricObserver.parallelSortingLogHandle, name: MetricObserver.contactSortingSignpostName)
+                    
                     guard let self = self else {
                         return
                     }
+                    
                     self.sortCancellationHandle = nil
                     completion(contacts)
                 }

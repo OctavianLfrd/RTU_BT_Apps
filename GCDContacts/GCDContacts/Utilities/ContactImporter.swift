@@ -7,6 +7,7 @@
 
 import Foundation
 import Contacts
+import MetricKit
 
 
 class ContactImporter {
@@ -28,8 +29,17 @@ class ContactImporter {
         switch authorizationStatus {
         case .authorized:
             Logger.i("Contact import authorized, proceeding")
+            
+            mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactImportSignpostName)
+            
             queue.async { [self] in
-                _importContacts(CNContactStore(), completion: completion)
+                _importContacts(CNContactStore()) { result in
+                    defer {
+                        mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactImportSignpostName)
+                    }
+                    
+                    completion(result)
+                }
             }
             break
         case .notDetermined:
@@ -42,9 +52,17 @@ class ContactImporter {
                     return
                 }
                 
+                mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactImportSignpostName)
+                
                 queue.async { [self] in
                     Logger.i("Contact import permission granted, importing contacts")
-                    _importContacts(contactStore, completion: completion)
+                    _importContacts(contactStore) { result in
+                        defer {
+                            mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactImportSignpostName)
+                        }
+                        
+                        completion(result)
+                    }
                 }
             }
         case .denied,

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MetricKit
 
 
 class ContactGenerator {
@@ -25,8 +26,16 @@ class ContactGenerator {
     }
     
     func generateContacts(_ count: Int, completion: @escaping GenerationCompletion) {
+        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactGenerationSignpostName)
+        
         workingQueue.async {
-            self._generateContacts(count, completion: completion)
+            self._generateContacts(count) { result in
+                defer {
+                    mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactGenerationSignpostName)
+                }
+                
+                completion(result)
+            }
         }
     }
     

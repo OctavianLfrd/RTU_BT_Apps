@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MetricKit
 
 
 final class Logger {
@@ -33,31 +34,37 @@ final class Logger {
     private static let fileHandle = createLogFile()
     
     static func d(_ message: String, file: String = #file, line: Int = #line) {
-        self.print(.debug, message: message, file: file, line: line)
+        print(.debug, message: message, file: file, line: line)
     }
     
     static func e(_ message: String, file: String = #file, line: Int = #line) {
-        self.print(.error, message: message, file: file, line: line)
+        print(.error, message: message, file: file, line: line)
     }
     
     static func i(_ message: String, file: String = #file, line: Int = #line) {
-        self.print(.info, message: message, file: file, line: line)
+        print(.info, message: message, file: file, line: line)
     }
     
     static func v(_ message: String, file: String = #file, line: Int = #line) {
-        self.print(.verbose, message: message, file: file, line: line)
+        print(.verbose, message: message, file: file, line: line)
     }
     
     static func w(_ message: String, file: String = #file, line: Int = #line) {
-        self.print(.warning, message: message, file: file, line: line)
+        print(.warning, message: message, file: file, line: line)
     }
     
     static func o(_ message: String, file: String = #file, line: Int = #line) {
-        self.print(.other, message: message, file: file, line: line)
+        print(.other, message: message, file: file, line: line)
     }
     
     static func print(_ level: LogLevel, message: String, file: String = #file, line: Int = #line) {
-        self.queue.async {
+        mxSignpost(.begin, log: MetricObserver.loggerLogHandle, name: MetricObserver.loggerWriteSignpostName)
+        
+        queue.async {
+            defer {
+                mxSignpost(.end, log: MetricObserver.loggerLogHandle, name: MetricObserver.loggerWriteSignpostName)
+            }
+            
             switch level {
             case .debug: writeLog(message, prefix: debugPrefix, timestamp: getCurrentTimeString(), file: file, line: line)
             case .error: writeLog(message, prefix: errorPrefix, timestamp: getCurrentTimeString(), file: file, line: line)
@@ -90,7 +97,7 @@ final class Logger {
     }
     
     private static func createDateFormatter() -> DateFormatter {
-        let formatter        = DateFormatter()
+        let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy HH:mm:ss.SSS"
         return formatter
     }
