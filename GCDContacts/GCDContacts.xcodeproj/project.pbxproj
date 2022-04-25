@@ -137,12 +137,12 @@
 		B69BB1252806EC3E00323DBD /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				B69BB1302806ED4700323DBD /* Model */,
 				B69BB1262806EC8900323DBD /* ContactGenerator.swift */,
 				B69653F028070E8A004C3C6C /* ContactImporter.swift */,
 				B69653F228072160004C3C6C /* ContactStore.swift */,
 				B69653F428073AE0004C3C6C /* ParallelMergeSorter.swift */,
 				B6BB198D280F170E00D40AE3 /* Logger.swift */,
-				B69BB1302806ED4700323DBD /* Model */,
 				B6BB198F280F1E0900D40AE3 /* FileArchiver.swift */,
 				B67181A4280F3F5C008CFB14 /* MetricObserver.swift */,
 			);

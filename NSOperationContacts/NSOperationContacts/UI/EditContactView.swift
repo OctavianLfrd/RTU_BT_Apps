@@ -1,8 +1,8 @@
 //
 //  EditContactView.swift
-//  GCDContacts
+//  NSOperationContacts
 //
-//  Created by Alfred Lapkovsky on 14/04/2022.
+//  Created by Alfred Lapkovsky on 25/04/2022.
 //
 
 import SwiftUI
@@ -51,7 +51,7 @@ struct EditContactView: View {
             }
         }
         .onAppear {
-            DispatchQueue.main.async {
+            OperationQueue.main.addOperation {
                 prepareEditableData()
             }
         }

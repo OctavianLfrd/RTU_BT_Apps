@@ -1,13 +1,13 @@
 //
 //  ContentViewModel.swift
-//  GCDContacts
+//  NSOperationContacts
 //
-//  Created by Alfred Lapkovsky on 14/04/2022.
+//  Created by Alfred Lapkovsky on 25/04/2022.
 //
 
 import Foundation
-import MetricKit
 import UIKit
+import MetricKit
 
 
 class ContentViewModel : ObservableObject {
@@ -16,16 +16,18 @@ class ContentViewModel : ObservableObject {
     @Published private(set) var isLoading = false
     @Published private(set) var sortType = SortType.auto
     
-    private let contactSorter = ParallelMergeSorter<Contact>(DispatchQueue(label: "ParallelMergeSorter.Queue", qos: .userInteractive, target: .global(qos: .userInteractive)))
+    private let sorterDispatchQueue: DispatchQueue
+    
+    private let contactSorter: ParallelMergeSorter<Contact>
     private var sortCancellationHandle: ParallelMergeSorter<Contact>.CancellationHandle?
     
     init() {
+        sorterDispatchQueue = DispatchQueue(label: "ParallelMergeSorter.Queue", qos: .userInteractive, target: .global(qos: .userInteractive))
+        let operationQueue = OperationQueue()
+        operationQueue.underlyingQueue = sorterDispatchQueue
+        contactSorter = ParallelMergeSorter<Contact>(operationQueue)
+        
         ContactStore.shared.addListener(self)
-    }
-    
-    deinit {
-        self.sortCancellationHandle?.cancel()
-        ContactStore.shared.removeListener(self)
     }
     
     func load() {
@@ -65,7 +67,7 @@ class ContentViewModel : ObservableObject {
                 return
             }
             
-            DispatchQueue.main.async { [weak self] in
+            OperationQueue.main.addOperation { [weak self] in
                 guard
                     let _ = self,
                     let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
@@ -87,15 +89,15 @@ class ContentViewModel : ObservableObject {
         
         self.sortType = sortType
         sortContacts(contacts) { contacts in
-            DispatchQueue.main.async { [weak self] in
+            OperationQueue.main.addOperation { [weak self] in
                 self?.contacts = contacts
             }
         }
     }
     
     private func sortContacts(_ contacts: [Contact], completion: @escaping ([Contact]) -> Void) {
-        sortCancellationHandle?.cancel()
-        sortCancellationHandle = nil
+        self.sortCancellationHandle?.cancel()
+        self.sortCancellationHandle = nil
         
         if sortType == .random {
             completion(contacts.shuffled())
@@ -103,9 +105,9 @@ class ContentViewModel : ObservableObject {
             
             mxSignpost(.begin, log: MetricObserver.parallelSortingLogHandle, name: MetricObserver.contactSortingSignpostName)
             
-            sortCancellationHandle = contactSorter.sort(contacts, comparator: getSortComparator()) { contacts in
-                DispatchQueue.main.async { [weak self] in
-                    
+            self.sortCancellationHandle = contactSorter.sort(contacts, comparator: getSortComparator()) { contacts in
+                OperationQueue.main.addOperation { [weak self] in
+
                     mxSignpost(.end, log: MetricObserver.parallelSortingLogHandle, name: MetricObserver.contactSortingSignpostName)
                     
                     guard let self = self else {
@@ -132,6 +134,11 @@ class ContentViewModel : ObservableObject {
         }
     }
     
+    deinit {
+        self.sortCancellationHandle?.cancel()
+        ContactStore.shared.removeListener(self)
+    }
+    
     enum SortType {
         case auto
         case firstName
@@ -143,7 +150,7 @@ class ContentViewModel : ObservableObject {
 extension ContentViewModel : ContactStoreListener {
     
     func contactStore(_ contactStore: ContactStore, didUpdate contacts: [Contact]) {
-        DispatchQueue.main.async { [weak self] in
+        OperationQueue.main.addOperation { [weak self] in
             guard let self = self else {
                 return
             }

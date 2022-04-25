@@ -1,8 +1,8 @@
 //
 //  LabeledUIValue.swift
-//  GCDContacts
+//  NSOperationContacts
 //
-//  Created by Alfred Lapkovsky on 18/04/2022.
+//  Created by Alfred Lapkovsky on 25/04/2022.
 //
 
 import Foundation

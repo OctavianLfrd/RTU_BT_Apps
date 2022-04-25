@@ -1,8 +1,8 @@
 //
 //  ContactImporter.swift
-//  GCDContacts
+//  NSOperationContacts
 //
-//  Created by Alfred Lapkovsky on 13/04/2022.
+//  Created by Alfred Lapkovsky on 20/04/2022.
 //
 
 import Foundation
@@ -16,9 +16,14 @@ class ContactImporter {
     
     static let shared = ContactImporter()
     
-    private let queue = DispatchQueue(label: "ContactImporter.Queue", qos: .userInitiated, target: .global(qos: .userInitiated))
+    private let operationQueue: OperationQueue
+    private let underlyingQueue: DispatchQueue
     
     private init() {
+        underlyingQueue = DispatchQueue(label: "ContactImporter.Queue", qos: .userInitiated, target: .global(qos: .userInitiated))
+        operationQueue = OperationQueue()
+        operationQueue.underlyingQueue = underlyingQueue
+        operationQueue.maxConcurrentOperationCount = 1
     }
     
     func importContacts(completion: @escaping ImportCompletion) {
@@ -32,7 +37,7 @@ class ContactImporter {
             
             mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactImportSignpostName)
             
-            queue.async { [self] in
+            operationQueue.addOperation { [self] in
                 _importContacts(CNContactStore()) { result in
                     defer {
                         mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactImportSignpostName)
@@ -41,21 +46,20 @@ class ContactImporter {
                     completion(result)
                 }
             }
-            break
         case .notDetermined:
             Logger.i("Contact import authorization status notDetermined, requesting permission")
             
             let contactStore = CNContactStore()
             contactStore.requestAccess(for: .contacts) { [self] granted, error in
                 guard granted && error == nil else {
-                    Logger.v("Contact import permission denied [granted=\(granted), error=\(String(describing: error))]")
+                    Logger.i("Contact import permission granted, importing contacts")
                     completion(.permissionDeniedExplicitly)
                     return
                 }
                 
                 mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactImportSignpostName)
                 
-                queue.async { [self] in
+                operationQueue.addOperation { [self] in
                     Logger.i("Contact import permission granted, importing contacts")
                     _importContacts(contactStore) { result in
                         defer {
