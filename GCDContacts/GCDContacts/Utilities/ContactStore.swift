@@ -212,7 +212,7 @@ class ContactStore {
                 mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreTimerFrequency)
             }
             
-            Logger.v("Cheching for contact updates")
+            Logger.v("Checking for contact updates")
             
             guard hasContactsChanged else {
                 return

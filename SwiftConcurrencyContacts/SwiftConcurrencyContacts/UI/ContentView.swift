@@ -1,8 +1,8 @@
 //
 //  ContentView.swift
-//  GCDContacts
+//  SwiftConcurrencyContacts
 //
-//  Created by Alfred Lapkovsky on 13/04/2022.
+//  Created by Alfred Lapkovsky on 26/04/2022.
 //
 
 import SwiftUI

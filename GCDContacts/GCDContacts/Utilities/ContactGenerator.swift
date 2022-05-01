@@ -40,7 +40,7 @@ class ContactGenerator {
     }
     
     private func _generateContacts(_ count: Int, completion: @escaping GenerationCompletion) {
-        guard let request = composeUserFetchUrl(count) else {
+        guard let request = createUserFetchRequest(count) else {
             completion(.requestFailed)
             return
         }
@@ -101,7 +101,7 @@ class ContactGenerator {
         var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 30)
         request.httpMethod = "GET"
         
-        return nil
+        return request
     }
     
     private func composeUserFetchUrl(_ count: Int) -> URL? {

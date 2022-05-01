@@ -1,8 +1,8 @@
 //
 //  ContactGenerator.swift
-//  NSOperationContacts
+//  SwiftConcurrencyContacts
 //
-//  Created by Alfred Lapkovsky on 20/04/2022.
+//  Created by Alfred Lapkovsky on 26/04/2022.
 //
 
 import Foundation
@@ -11,59 +11,54 @@ import MetricKit
 
 class ContactGenerator {
     
-    typealias GenerationCompletion = (Result) -> Void
-    
     static let shared = ContactGenerator()
-        
-    private let operationQueue: OperationQueue
-    private let underlyingQueue: DispatchQueue
+    
+    private var semaphore = AsyncSemaphore(3)
     
     private init() {
-        underlyingQueue = DispatchQueue(label: "ContactGenerator.Working", qos: .userInitiated, attributes: .concurrent, target: .global(qos: .userInitiated))
-        operationQueue = OperationQueue()
-        operationQueue.underlyingQueue = underlyingQueue
-        operationQueue.maxConcurrentOperationCount = 3
     }
     
-    func generateContacts(_ count: Int, completion: @escaping GenerationCompletion) {
+    func generateContacts(_ count: Int) async throws -> [Contact] {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactGenerationSignpostName)
         
-        operationQueue.addOperation(AsyncBlockOperation { [self] operationCompletion in
-            
-            func complete(_ result: Result) {
-                defer {
-                    mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactGenerationSignpostName)
-                }
-                
-                completion(result)
-                operationCompletion()
+        guard let request = createUserFetchRequest(count) else {
+            throw Error.requestFailed
+        }
+        
+        return try await semaphore.synchronize {
+            defer {
+                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactGenerationSignpostName)
             }
             
-            guard let request = createUserFetchRequest(count) else {
-                complete(.requestFailed)
-                return
+            Logger.i("Contact generation started [count=\(count)]")
+            
+            let data: Data
+            let response: URLResponse
+            
+            do {
+                (data, response) = try await URLSession.shared.data(for: request)
+            } catch {
+                Logger.e("Contact generation request failed error=\(error)")
+                throw Error.requestFailed
             }
             
-            URLSession.shared.dataTask(with: request) { data, response, error in
-                guard
-                    let data = data,
-                    let response = response as? HTTPURLResponse,
-                    response.statusCode == 200,
-                    error == nil
-                else {
-                    complete(.requestFailed)
-                    return
-                }
-                
-                do {
-                    let userResponse = try JSONDecoder().decode(UserResponse.self, from: data)
-                    complete(.success(contacts: userResponse.users.map { Contact($0) }))
-                } catch {
-                    complete(.parsingFailed)
-                }
+            guard
+                let response = response as? HTTPURLResponse,
+                response.statusCode == 200
+            else {
+                Logger.e("Contact generation request failed - response invalid")
+                throw Error.requestFailed
             }
-            .resume()
-        })
+            
+            do {
+                let userResponse = try JSONDecoder().decode(UserResponse.self, from: data)
+                Logger.i("Contact generation succeeded")
+                return userResponse.users.map { Contact($0) }
+            } catch {
+                Logger.i("Contact generation - contact parsing failed")
+                throw Error.parsingFailed
+            }
+        }
     }
     
     private func createUserFetchRequest(_ count: Int) -> URLRequest? {
@@ -86,8 +81,7 @@ class ContactGenerator {
         return components.url
     }
     
-    enum Result {
-        case success(contacts: [Contact])
+    enum Error : Swift.Error {
         case requestFailed
         case parsingFailed
     }
