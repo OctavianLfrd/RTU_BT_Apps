@@ -51,6 +51,10 @@ class ContactStore {
     
     func addListener(_ listener: ContactStoreListener) {
         let operation = BlockOperation { [self, weak listener] in
+            defer {
+                listeners.removeAll { $0.listener == nil }
+            }
+            
             guard
                 let listener = listener,
                 !listeners.contains(where: { $0.listener === listener })
@@ -58,11 +62,10 @@ class ContactStore {
                 return
             }
             
-            listeners.removeAll { $0.listener == nil }
             listeners.append(ListenerWrapper(listener))
         }
         
-        operation.qualityOfService = .utility
+        operation.qualityOfService = .userInteractive
         operation.queuePriority = .veryHigh
         
         operationQueue.addOperation(operation)
@@ -125,22 +128,18 @@ class ContactStore {
         }
         
         operation.qualityOfService = .userInteractive
+        operation.queuePriority = .high
 
         operationQueue.addOperation(operation)
     }
     
     func getContacts(_ completion: @escaping ([Contact]) -> Void) {
-        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreFetching)
-        
         let operation = BlockOperation { [self] in
-            defer {
-                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreFetching)
-            }
-            
             completion(Array(contactMap.values))
         }
         
         operation.qualityOfService = .userInteractive
+        operation.queuePriority = .high
         
         operationQueue.addOperation(operation)
     }

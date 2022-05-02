@@ -59,8 +59,6 @@ struct AddContactView: View {
                               lastName: lastName,
                               phoneNumbers: phoneNumbers.filter { !$0.value.isEmpty }.map { LabeledValue(label: $0.label, value: $0.value) },
                               emailAddresses: emailAddresses.filter { !$0.value.isEmpty }.map { LabeledValue(label: $0.label, value: $0.value) },
-                              imageUrl: nil,
-                              thumbnailUrl: nil,
                               flags: [])
         
         Task {

@@ -18,7 +18,6 @@ class ContactGenerator {
     private static let maxConcurrentRequests = 3
     
     private var activeRequestCount = 0
-    private var totalRequestCount = 0
     private var workingQueue = DispatchQueue(label: "ContactGenerator.Working", qos: .userInitiated, target: .global(qos: .userInitiated))
     private var pendingRequests: [PendingRequest] = []
     
@@ -40,28 +39,26 @@ class ContactGenerator {
     }
     
     private func _generateContacts(_ count: Int, completion: @escaping GenerationCompletion) {
-        guard let request = createUserFetchRequest(count) else {
-            completion(.requestFailed)
-            return
-        }
-        
         guard activeRequestCount < Self.maxConcurrentRequests else {
             self.pendingRequests.append(PendingRequest(count: count, completion: completion))
             return
         }
         
+        guard let request = createUserFetchRequest(count) else {
+            completion(.requestFailed)
+            return
+        }
+        
         activeRequestCount += 1
-        totalRequestCount += 1
         
-        let currentRequest = totalRequestCount
-        
-        Logger.i("Contact generation[\(currentRequest)] started [count=\(count)]")
+        Logger.i("Contact generation started [count=\(count)]")
         
         URLSession.shared.dataTask(with: request) { [self] data, response, error in
             
             func complete(_ result: Result) {
+                completion(result)
+                
                 workingQueue.async { [self] in
-                    completion(result)
                     activeRequestCount -= 1
                     if !pendingRequests.isEmpty {
                         let pendingRequest = pendingRequests.removeFirst()
@@ -76,17 +73,17 @@ class ContactGenerator {
                 response.statusCode == 200,
                 error == nil
             else {
-                Logger.e("Contact generation[\(currentRequest)] request failed [hasData=\(data != nil), isResponseValid=\((response as? HTTPURLResponse)?.statusCode == 200), error=\(String(describing: error))]")
+                Logger.e("Contact generation request failed [hasData=\(data != nil), isResponseValid=\((response as? HTTPURLResponse)?.statusCode == 200), error=\(String(describing: error))]")
                 complete(.requestFailed)
                 return
             }
             
             do {
                 let userResponse = try JSONDecoder().decode(UserResponse.self, from: data)
-                Logger.i("Contact generation[\(currentRequest)] succeeded")
+                Logger.i("Contact generation succeeded")
                 complete(.success(contacts: userResponse.users.map { Contact($0) }))
             } catch {
-                Logger.i("Contact generation[\(currentRequest)] contact parsing failed \(error)")
+                Logger.i("Contact generation - contact parsing failed [error=\(error)]")
                 complete(.parsingFailed)
             }
         }
@@ -146,8 +143,6 @@ private extension Contact {
             return phoneNumbers
         } ()
         self.emailAddresses = !user.email.isEmpty ? [LabeledValue(label: Contact.emailLabelHome, value: user.email)] : []
-        self.imageUrl = user.picture.largeUrl
-        self.thumbnailUrl = user.picture.thumbnailUrl
         self.flags = .generated
     }
 }

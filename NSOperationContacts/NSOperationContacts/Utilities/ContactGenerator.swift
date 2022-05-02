@@ -44,6 +44,8 @@ class ContactGenerator {
                 return
             }
             
+            Logger.i("Contact generation started [count=\(count)]")
+            
             URLSession.shared.dataTask(with: request) { data, response, error in
                 guard
                     let data = data,
@@ -51,14 +53,17 @@ class ContactGenerator {
                     response.statusCode == 200,
                     error == nil
                 else {
+                    Logger.e("Contact generation request failed [hasData=\(data != nil), isResponseValid=\((response as? HTTPURLResponse)?.statusCode == 200), error=\(String(describing: error))]")
                     complete(.requestFailed)
                     return
                 }
                 
                 do {
                     let userResponse = try JSONDecoder().decode(UserResponse.self, from: data)
+                    Logger.i("Contact generation succeeded")
                     complete(.success(contacts: userResponse.users.map { Contact($0) }))
                 } catch {
+                    Logger.e("Contact generation - contact parsing failed [error=\(error)]")
                     complete(.parsingFailed)
                 }
             }
@@ -112,8 +117,6 @@ private extension Contact {
             return phoneNumbers
         } ()
         self.emailAddresses = !user.email.isEmpty ? [LabeledValue(label: Contact.emailLabelHome, value: user.email)] : []
-        self.imageUrl = user.picture.largeUrl
-        self.thumbnailUrl = user.picture.thumbnailUrl
         self.flags = .generated
     }
 }

@@ -13,7 +13,7 @@ class ContactGenerator {
     
     static let shared = ContactGenerator()
     
-    private var semaphore = AsyncSemaphore(3)
+    private let semaphore = AsyncSemaphore(3)
     
     private init() {
     }
@@ -38,7 +38,7 @@ class ContactGenerator {
             do {
                 (data, response) = try await URLSession.shared.data(for: request)
             } catch {
-                Logger.e("Contact generation request failed error=\(error)")
+                Logger.e("Contact generation request failed [error=\(error)]")
                 throw Error.requestFailed
             }
             
@@ -55,7 +55,7 @@ class ContactGenerator {
                 Logger.i("Contact generation succeeded")
                 return userResponse.users.map { Contact($0) }
             } catch {
-                Logger.i("Contact generation - contact parsing failed")
+                Logger.i("Contact generation - contact parsing failed [error=\(error)]")
                 throw Error.parsingFailed
             }
         }
@@ -106,8 +106,6 @@ private extension Contact {
             return phoneNumbers
         } ()
         self.emailAddresses = !user.email.isEmpty ? [LabeledValue(label: Contact.emailLabelHome, value: user.email)] : []
-        self.imageUrl = user.picture.largeUrl
-        self.thumbnailUrl = user.picture.thumbnailUrl
         self.flags = .generated
     }
 }

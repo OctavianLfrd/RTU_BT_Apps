@@ -85,8 +85,7 @@ class ContactImporter {
             CNContactGivenNameKey,
             CNContactFamilyNameKey,
             CNContactEmailAddressesKey,
-            CNContactPhoneNumbersKey,
-            CNContactImageDataAvailableKey
+            CNContactPhoneNumbersKey
         ]
         
         let fetchRequest = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
@@ -122,8 +121,6 @@ private extension Contact {
         self.lastName = contact.familyName
         self.phoneNumbers = contact.phoneNumbers.map { LabeledValue(label: $0.label ?? "", value: $0.value.stringValue) }
         self.emailAddresses = contact.emailAddresses.map { LabeledValue(label: $0.label ?? "", value: $0.value as String) }
-        self.imageUrl = nil // TODO: Do something here
-        self.thumbnailUrl = nil // TODO: Do something here
         self.flags = .imported
     }
 }

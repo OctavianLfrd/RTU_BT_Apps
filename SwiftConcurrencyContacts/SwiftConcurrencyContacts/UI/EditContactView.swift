@@ -84,8 +84,6 @@ struct EditContactView: View {
                               lastName: lastName,
                               phoneNumbers: phoneNumbers.filter { !$0.value.isEmpty }.map { LabeledValue(label: $0.label, value: $0.value) },
                               emailAddresses: emailAddresses.filter { !$0.value.isEmpty }.map { LabeledValue(label: $0.label, value: $0.value) },
-                              imageUrl: oldContact.imageUrl,
-                              thumbnailUrl: oldContact.thumbnailUrl,
                               flags: oldContact.flags)
         
         Task {
@@ -121,6 +119,6 @@ struct EditContactView: View {
 
 struct EditContactView_Previews: PreviewProvider {
     static var previews: some View {
-        EditContactView(viewModel: ContactViewModel.shared(for: Contact(identifier: "Test", firstName: "First name", lastName: "Last name", phoneNumbers: [LabeledValue(label: "mobile", value: "+1 (111)-1111-111")], emailAddresses: [], imageUrl: nil, thumbnailUrl: nil, flags: [])))
+        EditContactView(viewModel: ContactViewModel.shared(for: Contact(identifier: "Test", firstName: "First name", lastName: "Last name", phoneNumbers: [LabeledValue(label: "mobile", value: "+1 (111)-1111-111")], emailAddresses: [], flags: [])))
     }
 }

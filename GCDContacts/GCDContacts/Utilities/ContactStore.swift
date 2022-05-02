@@ -20,8 +20,8 @@ class ContactStore {
     private static let fileName = "contacts"
     private static let fileExtension = "json"
     
-    private let readQueue: DispatchQueue
-    private let writeQueue: DispatchQueue
+    private let interactiveQueue: DispatchQueue
+    private let utilityQueue: DispatchQueue
     private let targetQueue: DispatchQueue
     private var timer: DispatchSourceTimer?
     
@@ -44,12 +44,16 @@ class ContactStore {
     
     private init() {
         self.targetQueue = DispatchQueue(label: "ContactStore.TargetQeueu", qos: .default, target: .global())
-        self.readQueue = DispatchQueue(label: "ContactStore.ReadQueue", qos: .userInteractive, target: targetQueue)
-        self.writeQueue = DispatchQueue(label: "ContactStore.UpdateQueue", qos: .utility, target: targetQueue)
+        self.interactiveQueue = DispatchQueue(label: "ContactStore.InteractiveQueue", qos: .userInteractive, target: targetQueue)
+        self.utilityQueue = DispatchQueue(label: "ContactStore.UtilityQueue", qos: .utility, target: targetQueue)
     }
     
     func addListener(_ listener: ContactStoreListener) {
-        writeQueue.async { [self, weak listener] in
+        interactiveQueue.async { [self, weak listener] in
+            defer {
+                listeners.removeAll { $0.listener == nil }
+            }
+            
             guard
                 let listener = listener,
                 !listeners.contains(where: { $0.listener === listener })
@@ -57,15 +61,17 @@ class ContactStore {
                 return
             }
             
-            listeners.removeAll { $0.listener == nil }
             listeners.append(ListenerWrapper(listener))
         }
     }
     
     func removeListener(_ listener: ContactStoreListener) {
-        writeQueue.async { [self, weak listener] in
-            guard let listener = listener else {
+        utilityQueue.async { [self, weak listener] in
+            defer {
                 listeners.removeAll(where: { $0.listener == nil })
+            }
+            
+            guard let listener = listener else {
                 return
             }
             
@@ -78,7 +84,7 @@ class ContactStore {
     func load() {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
         
-        readQueue.async { [self] in
+        interactiveQueue.async { [self] in
             defer {
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
             }
@@ -115,13 +121,7 @@ class ContactStore {
     }
     
     func getContacts(_ completion: @escaping ([Contact]) -> Void) {
-        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreFetching)
-        
-        readQueue.async { [self] in
-            defer {
-                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreFetching)
-            }
-            
+        interactiveQueue.async { [self] in
             completion(Array(contactMap.values))
         }
     }
@@ -133,7 +133,7 @@ class ContactStore {
     func storeContacts(_ contacts: [Contact]) {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
         
-        writeQueue.async { [self] in
+        utilityQueue.async { [self] in
             defer {
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
             }
@@ -171,7 +171,7 @@ class ContactStore {
     func deleteContacts(_ identifiers: Set<String>) {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreDeleting)
         
-        writeQueue.async { [self] in
+        utilityQueue.async { [self] in
             defer {
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreDeleting)
             }
@@ -202,10 +202,9 @@ class ContactStore {
         
         Logger.i("Starting contact saver")
         
-        timer = DispatchSource.makeTimerSource(queue: writeQueue)
+        timer = DispatchSource.makeTimerSource(queue: utilityQueue)
         timer!.schedule(deadline: .now() + 2, repeating: .seconds(2), leeway: .milliseconds(500))
         timer!.setEventHandler { [self] in
-            
             mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreTimerFrequency)
             
             defer {
@@ -267,7 +266,7 @@ class ContactStore {
 extension ContactStore : Archivable {
     
     func getArchivableUrl(_ completion: @escaping (URL?) -> Void) {
-        readQueue.async { [self] in
+        interactiveQueue.async { [self] in
             completion(getFileUrl())
         }
     }

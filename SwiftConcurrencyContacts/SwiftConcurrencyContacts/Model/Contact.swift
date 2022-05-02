@@ -56,8 +56,6 @@ struct Contact {
     let lastName: String
     let phoneNumbers: [LabeledValue<String, String>]
     let emailAddresses: [LabeledValue<String, String>]
-    let imageUrl: URL?
-    let thumbnailUrl: URL?
     let flags: Flags
     
     struct Flags: OptionSet, Codable {
@@ -73,8 +71,6 @@ struct Contact {
         case lastName
         case phoneNumbers
         case emailAddresses
-        case imageUrl
-        case thumbnailUrl
         case flags
     }
 }
@@ -96,13 +92,6 @@ extension Contact : Codable {
         lastName = try values.decode(String.self, forKey: .lastName)
         phoneNumbers = try values.decode([LabeledValue<String, String>].self, forKey: .phoneNumbers)
         emailAddresses = try values.decode([LabeledValue<String, String>].self, forKey: .emailAddresses)
-        
-        let imageUrlString = try values.decode(String?.self, forKey: .imageUrl)
-        imageUrl = imageUrlString.flatMap { URL(string: $0) }
-        
-        let thumbnailUrlString = try values.decode(String?.self, forKey: .thumbnailUrl)
-        thumbnailUrl = thumbnailUrlString.flatMap { URL(string: $0) }
-        
         flags = try values.decode(Flags.self, forKey: .flags)
     }
     
@@ -114,8 +103,6 @@ extension Contact : Codable {
         try container.encode(lastName, forKey: .lastName)
         try container.encode(phoneNumbers, forKey: .phoneNumbers)
         try container.encode(emailAddresses, forKey: .emailAddresses)
-        try container.encode(imageUrl?.absoluteString, forKey: .imageUrl)
-        try container.encode(thumbnailUrl?.absoluteString, forKey: .thumbnailUrl)
         try container.encode(flags, forKey: .flags)
     }
 }

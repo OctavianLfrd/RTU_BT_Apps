@@ -31,7 +31,7 @@ actor ContactStore {
     private var isLoaded = false
     private var hasContactsChanged = false
     
-    private struct ListenerWrapper {
+    private class ListenerWrapper {
         weak var listener: ContactStoreListener?
         
         init(_ listener: ContactStoreListener) {
@@ -43,11 +43,14 @@ actor ContactStore {
     }
     
     func addListener(_ listener: ContactStoreListener) {
+        defer {
+            listeners.removeAll(where: { $0.listener == nil })
+        }
+        
         guard !listeners.contains(where: { $0.listener === listener }) else {
             return
         }
         
-        listeners.removeAll(where: { $0.listener == nil })
         listeners.append(ListenerWrapper(listener))
     }
     
