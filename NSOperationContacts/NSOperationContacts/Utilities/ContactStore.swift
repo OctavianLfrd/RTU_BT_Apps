@@ -228,8 +228,14 @@ class ContactStore {
         
         Logger.i("Starting contact saver")
         
+        var firstEvent = true
+        
         timerCancellable = operationQueue.schedule(after: .init(.init(timeIntervalSinceNow: 2)), interval: .seconds(2), tolerance: .milliseconds(500)) { [self] in
-            mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreTimerFrequency)
+            if firstEvent {
+                firstEvent = false
+            } else {
+                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreTimerFrequency)
+            }
             
             defer {
                 mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreTimerFrequency)

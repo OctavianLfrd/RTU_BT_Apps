@@ -36,14 +36,8 @@ class ContactViewModel : ObservableObject {
         self.contact = contact
         self.contactIdentifier = contact.identifier
         
-        Task {
+        Task(priority: .high) {
             await ContactStore.shared.addListener(self)
-        }
-    }
-    
-    deinit {
-        Task {
-            await ContactStore.shared.removeListener(self)
         }
     }
     

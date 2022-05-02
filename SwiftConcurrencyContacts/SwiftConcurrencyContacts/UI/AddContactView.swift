@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MetricKit
 
 struct AddContactView: View {
     
@@ -61,8 +62,10 @@ struct AddContactView: View {
                               emailAddresses: emailAddresses.filter { !$0.value.isEmpty }.map { LabeledValue(label: $0.label, value: $0.value) },
                               flags: [])
         
-        Task {
+        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
+        Task(priority: .low) {
             await ContactStore.shared.storeContact(contact)
+            mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
         }
         
         dismiss()

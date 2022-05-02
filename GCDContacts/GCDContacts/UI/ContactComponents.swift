@@ -51,7 +51,7 @@ struct ContactComponents {
     
     static func buildLabeledTextField(_ geometry: GeometryProxy, hint: String, value: Binding<LabeledUIValue>, labelPickerId: Binding<UUID?>, labels: @escaping @autoclosure () -> [String]) -> some View {
         HStack(alignment: .center) {
-            buildLabeledButton(geometry, value: value, labelPickerId: labelPickerId, labels: Contact.emailLabels)
+            buildLabeledButton(geometry, value: value, labelPickerId: labelPickerId, labels: labels())
             TextField(hint, text: value.value)
         }
         .frame(maxHeight: .infinity, alignment: .center)

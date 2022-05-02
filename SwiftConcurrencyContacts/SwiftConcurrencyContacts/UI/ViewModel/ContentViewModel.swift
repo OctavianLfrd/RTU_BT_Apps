@@ -21,40 +21,36 @@ class ContentViewModel : ObservableObject {
     private var sortTask: Task<[Contact]?, Never>?
     
     init() {
-        Task {
+        Task(priority: .high) {
             await ContactStore.shared.addListener(self)
-        }
-    }
-    
-    deinit {
-        Task {
-            await ContactStore.shared.removeListener(self)
         }
     }
     
     func load() {
         isLoading = true
-        Task {
+        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
+        Task(priority: .high) {
             await ContactStore.shared.load()
+            mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
         }
     }
     
     func importContacts() {
-        Task {
-            do {
-                let contacts = try await ContactImporter.shared.importContacts()
+        Task(priority: .high) {
+            if let contacts = try? await ContactImporter.shared.importContacts() {
+                mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
                 await ContactStore.shared.storeContacts(contacts)
-            } catch {
+                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
             }
         }
     }
     
     func generateContacts() {
-        Task {
-            do {
-                let contacts = try await ContactGenerator.shared.generateContacts(100)
+        Task(priority: .high) {
+            if let contacts = try? await ContactGenerator.shared.generateContacts(100) {
+                mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
                 await ContactStore.shared.storeContacts(contacts)
-            } catch {
+                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
             }
         }
     }

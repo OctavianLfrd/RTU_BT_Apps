@@ -63,51 +63,37 @@ actor ContactStore {
     }
     
     func load() {
-        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
+        Logger.i("Trying to load contacts from persistent storage")
         
-        Task(priority: .high) {
-            defer {
-                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
-            }
-            
-            Logger.i("Trying to load contacts from persistent storage")
-            
-            guard !isLoaded else {
-                Logger.v("Contacts already loaded")
-                return
-            }
-            
-            defer {
-                isLoaded = true
-            }
-            
-            guard let fileUrl = getOrCreateFile() else {
-                Logger.e("getOrCreateFile() returned nil while loading contacts")
-                return
-            }
-            
-            startContactSaver(fileUrl)
-            
-            guard let contents = FileManager.default.contents(atPath: fileUrl.path) else {
-                Logger.e("Contact file contents are nil")
-                return
-            }
-            
-            contactMap = (try? decoder.decode([String : Contact].self, from: contents)) ?? [:]
-            
-            Logger.i("Contacts are successfully loaded")
-            
-            notifyListenersContactsUpdated()
+        guard !isLoaded else {
+            Logger.v("Contacts already loaded")
+            return
         }
+        
+        defer {
+            isLoaded = true
+        }
+        
+        guard let fileUrl = getOrCreateFile() else {
+            Logger.e("getOrCreateFile() returned nil while loading contacts")
+            return
+        }
+        
+        startContactSaver(fileUrl)
+        
+        guard let contents = FileManager.default.contents(atPath: fileUrl.path) else {
+            Logger.e("Contact file contents are nil")
+            return
+        }
+        
+        contactMap = (try? decoder.decode([String : Contact].self, from: contents)) ?? [:]
+        
+        Logger.i("Contacts are successfully loaded")
+        
+        notifyListenersContactsUpdated()
     }
     
     func getContacts() async -> [Contact] {
-        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreFetching)
-        
-        defer {
-            mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreFetching)
-        }
-        
         return Array(contactMap.values)
     }
     
@@ -116,12 +102,6 @@ actor ContactStore {
     }
     
     func storeContacts(_ contacts: [Contact]) {
-        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
-        
-        defer {
-            mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
-        }
-        
         guard isLoaded else {
             fatalError()
         }
@@ -152,12 +132,6 @@ actor ContactStore {
     }
     
     func deleteContacts(_ identifier: Set<String>) {
-        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreDeleting)
-        
-        defer {
-            mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreDeleting)
-        }
-        
         guard isLoaded else {
             fatalError()
         }

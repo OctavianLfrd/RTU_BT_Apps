@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MetricKit
 
 
 struct EditContactView: View {
@@ -86,8 +87,10 @@ struct EditContactView: View {
                               emailAddresses: emailAddresses.filter { !$0.value.isEmpty }.map { LabeledValue(label: $0.label, value: $0.value) },
                               flags: oldContact.flags)
         
-        Task {
+        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
+        Task(priority: .low) {
             await ContactStore.shared.storeContact(contact)
+            mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
         }
         
         dismiss()
@@ -98,8 +101,10 @@ struct EditContactView: View {
             return
         }
         
-        Task {
+        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreDeleting)
+        Task(priority: .low) {
             await ContactStore.shared.deleteContact(identifier)
+            mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreDeleting)
         }
         
         dismiss()

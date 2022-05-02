@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MetricKit
 
 
 final class Logger {
@@ -64,7 +65,13 @@ final class Logger {
     }
     
     static func print(_ level: LogLevel, message: String, file: String = #file, line: Int = #line) {
+        mxSignpost(.begin, log: MetricObserver.loggerLogHandle, name: MetricObserver.loggerWriteSignpostName)
+        
         operationQueue.addOperation {
+            defer {
+                mxSignpost(.end, log: MetricObserver.loggerLogHandle, name: MetricObserver.loggerWriteSignpostName)
+            }
+            
             switch level {
             case .debug: writeLog(message, prefix: debugPrefix, timestamp: getCurrentTimeString(), file: file, line: line)
             case .error: writeLog(message, prefix: errorPrefix, timestamp: getCurrentTimeString(), file: file, line: line)

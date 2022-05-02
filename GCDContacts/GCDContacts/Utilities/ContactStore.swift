@@ -131,11 +131,17 @@ class ContactStore {
     }
     
     func storeContacts(_ contacts: [Contact]) {
-        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
+        var firstEvent = true
         
         utilityQueue.async { [self] in
-            defer {
+            if firstEvent {
+                firstEvent = false
+            } else {
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
+            }
+            
+            defer {
+                mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
             }
             
             guard isLoaded else {
