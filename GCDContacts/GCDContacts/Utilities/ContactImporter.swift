@@ -90,7 +90,9 @@ class ContactImporter {
             var contacts = [Contact]()
             
             try store.enumerateContacts(with: fetchRequest) { contact, _ in
-                contacts.append(Contact(contact))
+                let appContact = Contact(contact)
+                contacts.append(appContact)
+                Logger.v("Imported contact=\(appContact)")
             }
             
             Logger.i("Contact import succeeded")
@@ -111,12 +113,50 @@ class ContactImporter {
 
 private extension Contact {
     
+    private static let phoneNumberLabelMap: [String : String] = [
+        CNLabelPhoneNumberMobile : Contact.phoneNumberLabelMobile,
+        CNLabelHome : Contact.phoneNumberLabelHome,
+        CNLabelWork : Contact.phoneNumberLabelWork,
+        CNLabelSchool : Contact.phoneNumberLabelSchool,
+        CNLabelPhoneNumberiPhone : Contact.phoneNumberLabeliPhone,
+        CNLabelPhoneNumberAppleWatch : Contact.phoneNumberLabelAppleWatch,
+        CNLabelPhoneNumberMain : Contact.phoneNumberLabelMain,
+        CNLabelPhoneNumberHomeFax : Contact.phoneNumberLabelHomeFax,
+        CNLabelPhoneNumberWorkFax : Contact.phoneNumberLabelWorkFax,
+        CNLabelPhoneNumberPager : Contact.phoneNumberLabelPager,
+        CNLabelOther : Contact.phoneNumberLabelOther
+    ]
+    
+    private static let emailLabelMap: [String : String] = [
+        CNLabelHome : Contact.emailLabelHome,
+        CNLabelWork : Contact.emailLabelWork,
+        CNLabelSchool : Contact.emailLabelSchool,
+        CNLabelEmailiCloud : Contact.emailLabeliCloud,
+        CNLabelOther : Contact.emailLabelOther
+    ]
+    
     init(_ contact: CNContact) {
         self.identifier = contact.identifier
         self.firstName = contact.givenName
         self.lastName = contact.familyName
-        self.phoneNumbers = contact.phoneNumbers.map { LabeledValue(label: $0.label ?? "", value: $0.value.stringValue) }
-        self.emailAddresses = contact.emailAddresses.map { LabeledValue(label: $0.label ?? "", value: $0.value as String) }
+        self.phoneNumbers = contact.phoneNumbers.map { LabeledValue(label: Self.mapPhoneNumberLabel($0.label), value: $0.value.stringValue) }
+        self.emailAddresses = contact.emailAddresses.map { LabeledValue(label: Self.mapEmailLabel($0.label), value: $0.value as String) }
         self.flags = .imported
+    }
+    
+    private static func mapPhoneNumberLabel(_ cnLabel: String?) -> String {
+        guard let cnLabel = cnLabel else {
+            return Contact.phoneNumberLabelOther
+        }
+
+        return Self.phoneNumberLabelMap[cnLabel] ?? Contact.phoneNumberLabelOther
+    }
+    
+    private static func mapEmailLabel(_ cnLabel: String?) -> String {
+        guard let cnLabel = cnLabel else {
+            return Contact.emailLabelOther
+        }
+
+        return Self.emailLabelMap[cnLabel] ?? Contact.emailLabelOther
     }
 }

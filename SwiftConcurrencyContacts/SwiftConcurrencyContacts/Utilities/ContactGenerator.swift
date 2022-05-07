@@ -53,7 +53,11 @@ class ContactGenerator {
             do {
                 let userResponse = try JSONDecoder().decode(UserResponse.self, from: data)
                 Logger.i("Contact generation succeeded")
-                return userResponse.users.map { Contact($0) }
+                return userResponse.users.map {
+                    let contact = Contact($0)
+                    Logger.v("Generated contact=\(contact)")
+                    return contact
+                }
             } catch {
                 Logger.i("Contact generation - contact parsing failed [error=\(error)]")
                 throw Error.parsingFailed

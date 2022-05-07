@@ -94,6 +94,6 @@ struct ContactDetailsView: View {
 
 struct ContactDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        ContactDetailsView(viewModel: ContactViewModel.shared(for: Contact(identifier: "Test", firstName: "First name", lastName: "Last name", phoneNumbers: [LabeledValue(label: "mobile", value: "+1 (111)-1111-111")], emailAddresses: [], imageUrl: nil, thumbnailUrl: nil, flags: [])))
+        ContactDetailsView(viewModel: ContactViewModel.shared(for: Contact(identifier: "Test", firstName: "First name", lastName: "Last name", phoneNumbers: [LabeledValue(label: "mobile", value: "+1 (111)-1111-111")], emailAddresses: [], flags: [])))
     }
 }
