@@ -5,25 +5,31 @@
 //  Created by Alfred Lapkovsky on 20/04/2022.
 //
 
+/**
+ 
+ MEANINGFUL LINES OF CODE: 92
+ 
+ */
+
 import Foundation
-import MetricKit
+import MetricKit // [lines: 2]
 
 
-class ContactGenerator {
+class ContactGenerator { // [lines: 3]
     
-    typealias GenerationCompletion = (Result) -> Void
+    typealias GenerationCompletion = (Result) -> Void // [lines: 4]
     
-    static let shared = ContactGenerator()
+    static let shared = ContactGenerator() // [lines: 5]
         
     private let operationQueue: OperationQueue
-    private let underlyingQueue: DispatchQueue
+    private let underlyingQueue: DispatchQueue // [lines: 7]
     
     private init() {
         underlyingQueue = DispatchQueue(label: "ContactGenerator.Working", qos: .userInitiated, attributes: .concurrent, target: .global(qos: .userInitiated))
         operationQueue = OperationQueue()
         operationQueue.underlyingQueue = underlyingQueue
         operationQueue.maxConcurrentOperationCount = 3
-    }
+    } // [lines: 13]
     
     func generateContacts(_ count: Int, completion: @escaping GenerationCompletion) {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactGenerationSignpostName)
@@ -73,7 +79,7 @@ class ContactGenerator {
             }
             .resume()
         })
-    }
+    } // [lines: 51]
     
     private func createUserFetchRequest(_ count: Int) -> URLRequest? {
         guard count > 0, let url = composeUserFetchUrl(count) else {
@@ -84,7 +90,7 @@ class ContactGenerator {
         request.httpMethod = "GET"
         
         return request
-    }
+    } // [lines: 59]
     
     private func composeUserFetchUrl(_ count: Int) -> URL? {
         var components = URLComponents()
@@ -93,14 +99,14 @@ class ContactGenerator {
         components.path = "/api/"
         components.queryItems = [ URLQueryItem(name: "results", value: String(count)) ]
         return components.url
-    }
+    } // [lines: 67]
     
     enum Result {
         case success(contacts: [Contact])
         case requestFailed
         case parsingFailed
-    }
-}
+    } // [lines: 72]
+} // [lines: 73]
 
 private extension Contact {
     
@@ -123,4 +129,4 @@ private extension Contact {
         self.emailAddresses = !user.email.isEmpty ? [LabeledValue(label: Contact.emailLabelHome, value: user.email)] : []
         self.flags = .generated
     }
-}
+} // [lines: 92]

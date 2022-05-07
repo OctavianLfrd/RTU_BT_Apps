@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B64C71E42826865200DAA839 /* CodeComplexity.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B64C71E32826865200DAA839 /* CodeComplexity.rtf */; };
 		B67181D32810762A008CFB14 /* NSOperationContactsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67181D22810762A008CFB14 /* NSOperationContactsApp.swift */; };
 		B67181D52810762A008CFB14 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67181D42810762A008CFB14 /* ContentView.swift */; };
 		B67181D72810762B008CFB14 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B67181D62810762B008CFB14 /* Assets.xcassets */; };
@@ -35,6 +36,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B64C71E32826865200DAA839 /* CodeComplexity.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = CodeComplexity.rtf; sourceTree = "<group>"; };
 		B67181CF2810762A008CFB14 /* NSOperationContacts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NSOperationContacts.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B67181D22810762A008CFB14 /* NSOperationContactsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSOperationContactsApp.swift; sourceTree = "<group>"; };
 		B67181D42810762A008CFB14 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 				B67181D22810762A008CFB14 /* NSOperationContactsApp.swift */,
 				B67181D62810762B008CFB14 /* Assets.xcassets */,
 				B67181D82810762B008CFB14 /* Preview Content */,
+				B64C71E32826865200DAA839 /* CodeComplexity.rtf */,
 			);
 			path = NSOperationContacts;
 			sourceTree = "<group>";
@@ -229,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B67181DA2810762B008CFB14 /* Preview Assets.xcassets in Resources */,
+				B64C71E42826865200DAA839 /* CodeComplexity.rtf in Resources */,
 				B67181D72810762B008CFB14 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

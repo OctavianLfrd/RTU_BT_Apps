@@ -53,6 +53,12 @@ struct AddContactView: View {
         .disabled(!readyToSave)
     }
     
+    /**
+     
+     MEANINGFUL LINES OF CODE: 10
+     
+     */
+    
     private func saveContact() {
         let contact = Contact(identifier: UUID().uuidString,
                               firstName: firstName,
@@ -64,7 +70,7 @@ struct AddContactView: View {
         ContactStore.shared.storeContact(contact)
         
         dismiss()
-    }
+    } // [lines: 10]
 }
 
 struct AddContactView_Previews: PreviewProvider {

@@ -5,34 +5,40 @@
 //  Created by Alfred Lapkovsky on 20/04/2022.
 //
 
+/**
+ 
+ MEANINGFUL LINES OF CODE: 202
+ 
+ */
+
 import Foundation
 import Combine
-import MetricKit
+import MetricKit // [lines: 3]
 
 
 protocol ContactStoreListener : AnyObject {
     func contactStore(_ contactStore: ContactStore, didUpdate contacts: [Contact])
-}
+} // [lines: 6]
 
-class ContactStore {
+class ContactStore { // [lines: 7]
     
-    static let shared = ContactStore()
+    static let shared = ContactStore() // [lines: 8]
     
     private static let fileName = "contacts"
-    private static let fileExtension = "json"
+    private static let fileExtension = "json" // [lines: 10]
     
     private var underlyingQueue: DispatchQueue
     private var operationQueue: OperationQueue
-    private var timerCancellable: Cancellable?
+    private var timerCancellable: Cancellable? // [lines: 13]
     
     private let encoder = JSONEncoder()
-    private let decoder = JSONDecoder()
+    private let decoder = JSONDecoder() // [lines: 15]
     
     private var contactMap = [String : Contact]()
-    private var listeners = [ListenerWrapper]()
+    private var listeners = [ListenerWrapper]() // [lines: 17]
     
     private var isLoaded = false
-    private var hasContactsChanged = false
+    private var hasContactsChanged = false // [lines: 19]
     
     private struct ListenerWrapper {
         weak var listener: ContactStoreListener?
@@ -40,14 +46,14 @@ class ContactStore {
         init(_ listener: ContactStoreListener) {
             self.listener = listener
         }
-    }
+    } // [lines: 25]
     
     private init() {
         underlyingQueue = DispatchQueue(label: "ContactStore.Queue", qos: .default, target: .global())
         operationQueue = OperationQueue()
         operationQueue.underlyingQueue = underlyingQueue
         operationQueue.maxConcurrentOperationCount = 1
-    }
+    } // [lines: 31]
     
     func addListener(_ listener: ContactStoreListener) {
         let operation = BlockOperation { [self, weak listener] in
@@ -69,7 +75,7 @@ class ContactStore {
         operation.queuePriority = .veryHigh
         
         operationQueue.addOperation(operation)
-    }
+    } // [lines: 48]
     
     func removeListener(_ listener: ContactStoreListener) {
         let operation = BlockOperation { [self, weak listener] in
@@ -87,7 +93,7 @@ class ContactStore {
         operation.queuePriority = .veryHigh
         
         operationQueue.addOperation(operation)
-    }
+    } // [lines: 62]
     
     func load() {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
@@ -131,7 +137,7 @@ class ContactStore {
         operation.queuePriority = .high
 
         operationQueue.addOperation(operation)
-    }
+    } // [lines: 89]
     
     func getContacts(_ completion: @escaping ([Contact]) -> Void) {
         let operation = BlockOperation { [self] in
@@ -142,11 +148,11 @@ class ContactStore {
         operation.queuePriority = .high
         
         operationQueue.addOperation(operation)
-    }
+    } // [lines: 97]
     
     func storeContact(_ contact: Contact) {
         storeContacts([contact])
-    }
+    } // [lines: 100]
     
     func storeContacts(_ contacts: [Contact]) {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
@@ -184,11 +190,11 @@ class ContactStore {
         operation.qualityOfService = .utility
         
         operationQueue.addOperation(operation)
-    }
+    } // [lines: 126]
     
     func deleteContact(_ identifier: String) {
         deleteContacts([identifier])
-    }
+    } // [lines: 129]
     
     func deleteContacts(_ identifiers: Set<String>) {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreDeleting)
@@ -219,7 +225,7 @@ class ContactStore {
         operation.qualityOfService = .utility
         
         operationQueue.addOperation(operation)
-    }
+    } // [lines: 148]
     
     private func startContactSaver(_ fileUrl: URL) {
         guard timerCancellable == nil else {
@@ -228,10 +234,10 @@ class ContactStore {
         
         Logger.i("Starting contact saver")
         
-        var firstEvent = true
+        var firstEvent = true // Not counted because it is needed only for mxSignpost
         
         timerCancellable = operationQueue.schedule(after: .init(.init(timeIntervalSinceNow: 2)), interval: .seconds(2), tolerance: .milliseconds(500)) { [self] in
-            if firstEvent {
+            if firstEvent { // Not counted because it is needed only for mxSignpost
                 firstEvent = false
             } else {
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreTimerFrequency)
@@ -259,14 +265,14 @@ class ContactStore {
                 Logger.e("Failed to store contact changes to persistent storage [error=\(error)]")
             }
         }
-    }
+    } // [lines: 169]
     
     private func notifyListenersContactsUpdated() {
         listeners.removeAll { $0.listener == nil }
         listeners.forEach {
             $0.listener?.contactStore(self, didUpdate: Array(contactMap.values))
         }
-    }
+    } // [lines: 175]
     
     private func getOrCreateFile() -> URL? {
         guard let fileUrl = getFileUrl() else {
@@ -280,7 +286,7 @@ class ContactStore {
         }
         
         return fileUrl
-    }
+    } // [lines: 186]
     
     private func getFileUrl() -> URL? {
         guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
@@ -288,8 +294,8 @@ class ContactStore {
         }
         
         return documentsDirectory.appendingPathComponent(Self.fileName).appendingPathExtension(Self.fileExtension)
-    }
-}
+    } // [lines: 192]
+} // [lines: 193]
 
 extension ContactStore : Archivable {
     
@@ -302,4 +308,4 @@ extension ContactStore : Archivable {
         
         operationQueue.addOperation(operation)
     }
-}
+} // [lines: 202]

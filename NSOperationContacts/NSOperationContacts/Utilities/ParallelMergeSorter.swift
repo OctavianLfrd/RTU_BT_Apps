@@ -5,15 +5,21 @@
 //  Created by Alfred Lapkovsky on 20/04/2022.
 //
 
-import Foundation
+/**
+ 
+ MEANINGFUL LINES OF CODE: 118
+ 
+ */
+
+import Foundation // [lines: 1]
 
 
-class ParallelMergeSorter<T> {
+class ParallelMergeSorter<T> { // [lines: 2]
     
-    typealias Comparator = (T, T) -> Bool
+    typealias Comparator = (T, T) -> Bool // [lines: 3]
     
     private var underlyingQueue: DispatchQueue?
-    private let operationQueue: OperationQueue
+    private let operationQueue: OperationQueue // [lines: 5]
     
     init(_ sortQueue: OperationQueue? = nil) {
         if let sortQueue = sortQueue {
@@ -23,7 +29,7 @@ class ParallelMergeSorter<T> {
             underlyingQueue = DispatchQueue(label: "ParallelMergeSorter.Queue", qos: .utility, attributes: .concurrent, target: .global(qos: .utility))
             operationQueue.underlyingQueue = underlyingQueue
         }
-    }
+    } // [lines: 14]
     
     func sort(_ array: [T], parallelismLevel: Int = ProcessInfo.processInfo.processorCount, comparator: @escaping Comparator, completion: @escaping ([T]) -> Void) -> CancellationHandle {
         var array = array
@@ -78,7 +84,7 @@ class ParallelMergeSorter<T> {
         }
         
         return CancellationHandle(completionOperation)
-    }
+    } // [lines: 54]
     
     private func mergeSort(_ array: inout [T], begin: Int, end: Int, comparator: Comparator, isCancelled: @autoclosure () -> Bool) {
         guard begin < end, !isCancelled() else {
@@ -91,7 +97,7 @@ class ParallelMergeSorter<T> {
         mergeSort(&array, begin: middle + 1, end: end, comparator: comparator, isCancelled: isCancelled())
         
         merge(&array, begin: begin, middle: middle, end: end, comparator: comparator, isCancelled: isCancelled())
-    }
+    } // [lines: 63]
     
     private func merge(_ array: inout [T], begin: Int, middle: Int, end: Int, comparator: Comparator, isCancelled: @autoclosure () -> Bool) {
         var temp = Array<T?>.init(repeating: nil, count: end - begin + 1)
@@ -147,7 +153,7 @@ class ParallelMergeSorter<T> {
             i += 1
             k += 1
         }
-    }
+    } // [lines: 108]
     
     struct CancellationHandle {
         
@@ -160,5 +166,5 @@ class ParallelMergeSorter<T> {
         func cancel() {
             operation.cancel()
         }
-    }
-}
+    } // [lines: 117]
+} // [lines: 118]

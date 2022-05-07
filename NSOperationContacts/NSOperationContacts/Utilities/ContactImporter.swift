@@ -5,26 +5,32 @@
 //  Created by Alfred Lapkovsky on 20/04/2022.
 //
 
+/**
+ 
+ MEANINGFUL LINES OF CODE: 121
+ 
+ */
+
 import Foundation
 import Contacts
-import MetricKit
+import MetricKit // [lines: 3]
 
 
-class ContactImporter {
+class ContactImporter { // [lines: 4]
     
-    typealias ImportCompletion = (Result) -> Void
+    typealias ImportCompletion = (Result) -> Void // [lines: 5]
     
-    static let shared = ContactImporter()
+    static let shared = ContactImporter() // [lines: 6]
     
     private let operationQueue: OperationQueue
-    private let underlyingQueue: DispatchQueue
+    private let underlyingQueue: DispatchQueue // [lines: 8]
     
     private init() {
         underlyingQueue = DispatchQueue(label: "ContactImporter.Queue", qos: .userInitiated, target: .global(qos: .userInitiated))
         operationQueue = OperationQueue()
         operationQueue.underlyingQueue = underlyingQueue
         operationQueue.maxConcurrentOperationCount = 1
-    }
+    } // [lines: 14]
     
     func importContacts(completion: @escaping ImportCompletion) {
         Logger.i("Contact import started")
@@ -78,7 +84,7 @@ class ContactImporter {
             Logger.e("Contact import permission status unknown")
             completion(.permissionDenied)
         }
-    }
+    } // [lines: 50]
     
     private func _importContacts(_ store: CNContactStore, completion: ImportCompletion) {
         let keys = [
@@ -105,15 +111,15 @@ class ContactImporter {
             Logger.e("Contact import failed [error=\(error)]")
             completion(.failed)
         }
-    }
+    } // [lines: 72]
     
     enum Result {
         case success(contacts: [Contact])
         case permissionDenied
         case permissionDeniedExplicitly
         case failed
-    }
-}
+    } // [lines: 78]
+} // [lines: 79]
 
 private extension Contact {
     
@@ -163,4 +169,4 @@ private extension Contact {
 
         return Self.emailLabelMap[cnLabel] ?? Contact.emailLabelOther
     }
-}
+} // [lines: 121]

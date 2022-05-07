@@ -5,11 +5,17 @@
 //  Created by Alfred Lapkovsky on 20/04/2022.
 //
 
+/**
+ 
+ MEANINGFUL LINES OF CODE: 109
+ 
+ */
+
 import Foundation
-import MetricKit
+import MetricKit // [lines: 2]
 
 
-final class Logger {
+final class Logger { // [lines: 3]
     
     enum LogLevel {
         case debug
@@ -18,16 +24,16 @@ final class Logger {
         case verbose
         case warning
         case other
-    }
+    } // [lines: 11]
     
     private static let debugPrefix = "\u{1FAB2} [   DEBUG   ]"
     private static let errorPrefix = "\u{1F534} [   ERROR   ]"
     private static let infoPrefix = "\u{1F535} [   INFO    ]"
     private static let warningPrefix = "\u{1F7E1} [  WARNING  ]"
     private static let verbosePrefix = "\u{1F7E3} [  VERBOSE  ]"
-    private static let otherPrefix = "\u{26AA}"
+    private static let otherPrefix = "\u{26AA}" // [lines: 17]
     
-    private static let logDirectoryName = "Logs"
+    private static let logDirectoryName = "Logs" // [lines: 18]
     
     private static let underlyingQueue = DispatchQueue(label: "Logger.Queue", qos: .background, target: .global(qos: .background))
     private static let operationQueue: OperationQueue = {
@@ -35,34 +41,34 @@ final class Logger {
         operationQueue.underlyingQueue = underlyingQueue
         operationQueue.maxConcurrentOperationCount = 1
         return operationQueue
-    }()
+    }() // [lines: 25]
     
     private static let dateFormatter = createDateFormatter()
-    private static let fileHandle = createLogFile()
+    private static let fileHandle = createLogFile() // [lines: 27]
     
     static func d(_ message: String, file: String = #file, line: Int = #line) {
         print(.debug, message: message, file: file, line: line)
-    }
+    } // [lines: 30]
     
     static func e(_ message: String, file: String = #file, line: Int = #line) {
         print(.error, message: message, file: file, line: line)
-    }
+    } // [lines: 33]
     
     static func i(_ message: String, file: String = #file, line: Int = #line) {
         print(.info, message: message, file: file, line: line)
-    }
+    } // [lines: 36]
     
     static func v(_ message: String, file: String = #file, line: Int = #line) {
         print(.verbose, message: message, file: file, line: line)
-    }
+    } // [lines: 39]
     
     static func w(_ message: String, file: String = #file, line: Int = #line) {
         print(.warning, message: message, file: file, line: line)
-    }
+    } // [lines: 42]
     
     static func o(_ message: String, file: String = #file, line: Int = #line) {
         print(.other, message: message, file: file, line: line)
-    }
+    } // [lines: 45]
     
     static func print(_ level: LogLevel, message: String, file: String = #file, line: Int = #line) {
         mxSignpost(.begin, log: MetricObserver.loggerLogHandle, name: MetricObserver.loggerWriteSignpostName)
@@ -81,7 +87,7 @@ final class Logger {
             case .other: writeLog(message, prefix: otherPrefix, timestamp: "", file: nil, line: nil)
             }
         }
-    }
+    } // [lines: 57]
     
     private static func writeLog(_ message: String, prefix: String, timestamp: String, file: String?, line: Int?) {
         let timestampString = timestamp.isEmpty ? "" : "[\(timestamp)]"
@@ -101,13 +107,13 @@ final class Logger {
 #if DEBUG
         Swift.print(log)
 #endif // DEBUG
-    }
+    } // [lines: 72]
     
     private static func createDateFormatter() -> DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd.MM.yyyy HH:mm:ss.SSS"
         return formatter
-    }
+    } // [lines: 77]
     
     private static func createLogFile() -> FileHandle? {
         let fileName = getCurrentTimeString()
@@ -124,19 +130,19 @@ final class Logger {
         }
         
         return try? FileHandle(forUpdating: fileUrl)
-    }
+    } // [lines: 89]
     
     private static func getLogDirectoryUrl() -> URL {
         let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first!
         
         return libraryDirectory.appendingPathComponent(Self.logDirectoryName, isDirectory: true)
-    }
+    } // [lines: 93]
     
     private static func getCurrentTimeString() -> String {
         self.dateFormatter.string(from: Date())
-    }
+    } // [lines: 96]
     
-}
+} // [lines: 97]
 
 extension Logger : Archivable {
     
@@ -152,4 +158,4 @@ extension Logger : Archivable {
             completion(logDirectoryUrl)
         }
     }
-}
+} // [lines: 109]

@@ -5,25 +5,31 @@
 //  Created by Alfred Lapkovsky on 20/04/2022.
 //
 
-import Foundation
+/**
+ 
+ MEANINGFUL LINES OF CODE: 38
+ 
+ */
+
+import Foundation // [lines: 1]
 
 
-class AsyncBlockOperation : Operation {
+class AsyncBlockOperation : Operation { // [lines: 2]
     
     typealias CompletionHandler = () -> Void
-    typealias OperationBlock = (_ completion: @escaping CompletionHandler) -> Void
+    typealias OperationBlock = (_ completion: @escaping CompletionHandler) -> Void // [lines: 4]
     
-    private let operationBlock: OperationBlock
+    private let operationBlock: OperationBlock // [lines: 5]
     
     private var _isExecuting = false
-    private var _isFinished = false
+    private var _isFinished = false // [lines: 7]
     
     override var isExecuting: Bool { _isExecuting }
-    override var isFinished: Bool { _isFinished }
+    override var isFinished: Bool { _isFinished } // [lines: 9]
     
     init(_ block: @escaping OperationBlock) {
         self.operationBlock = block
-    }
+    } // [lines: 12]
     
     override func start() {
         guard !self.isCancelled else {
@@ -37,7 +43,7 @@ class AsyncBlockOperation : Operation {
         main()
         _isExecuting = true
         didChangeValue(forKey: "isExecuting")
-    }
+    } // [lines: 24]
     
     override func main() {
         operationBlock { [weak self] in
@@ -52,5 +58,5 @@ class AsyncBlockOperation : Operation {
             self.didChangeValue(forKey: "isExecuting")
             self.didChangeValue(forKey: "isFinished")
         }
-    }
-}
+    } // [lines: 37]
+} // [lines: 38]
