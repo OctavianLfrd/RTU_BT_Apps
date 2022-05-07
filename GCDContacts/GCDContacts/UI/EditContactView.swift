@@ -76,6 +76,12 @@ struct EditContactView: View {
         .buttonStyle(.plain)
     }
     
+    /**
+     
+     MEANINGFUL LINES OF CODE: 20
+     
+     */
+    
     private func saveContact() {
         guard let oldContact = viewModel.contact else {
             return
@@ -91,7 +97,7 @@ struct EditContactView: View {
         ContactStore.shared.storeContact(contact)
         
         dismiss()
-    }
+    } // [lines: 13]
     
     private func deleteContact() {
         guard let identifier = viewModel.contact?.identifier else {
@@ -101,7 +107,7 @@ struct EditContactView: View {
         ContactStore.shared.deleteContact(identifier)
         
         dismiss()
-    }
+    } // [lines: 20]
     
     private func prepareEditableData() {
         guard let contact = viewModel.contact else {

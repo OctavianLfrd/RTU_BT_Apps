@@ -5,18 +5,24 @@
 //  Created by Alfred Lapkovsky on 13/04/2022.
 //
 
-import Foundation
+/**
+ 
+ MEANINGFUL LINES OF CODE: 110
+ 
+ */
+
+import Foundation // [lines: 1]
 
 
-class ParallelMergeSorter<T> {
+class ParallelMergeSorter<T> { // [lines: 2]
     
-    typealias Comparator = (T, T) -> Bool
+    typealias Comparator = (T, T) -> Bool // [lines: 3]
     
-    private let queue: DispatchQueue
+    private let queue: DispatchQueue // [lines: 4]
     
     init(_ sortQueue: DispatchQueue? = nil) {
         self.queue = sortQueue ?? DispatchQueue(label: "ParallelMergeSorter.Queue", qos: .utility, attributes: .concurrent, target: .global(qos: .utility))
-    }
+    } // [lines: 7]
     
     func sort(_ array: [T], parallelismLevel: Int = ProcessInfo.processInfo.processorCount, comparator: @escaping Comparator, completion: @escaping ([T]) -> Void) -> CancellationHandle {
         var array = array
@@ -69,7 +75,7 @@ class ParallelMergeSorter<T> {
         })
         
         return CancellationHandle(completionWorkItem)
-    }
+    } // [lines: 46]
     
     private func mergeSort(_ array: inout [T], begin: Int, end: Int, comparator: Comparator, isCancelled: @autoclosure () -> Bool) {
         guard begin < end, !isCancelled() else {
@@ -82,7 +88,7 @@ class ParallelMergeSorter<T> {
         mergeSort(&array, begin: middle + 1, end: end, comparator: comparator, isCancelled: isCancelled())
         
         merge(&array, begin: begin, middle: middle, end: end, comparator: comparator, isCancelled: isCancelled())
-    }
+    } // [lines: 55]
     
     private func merge(_ array: inout [T], begin: Int, middle: Int, end: Int, comparator: Comparator, isCancelled: @autoclosure () -> Bool) {
         var temp = Array<T?>.init(repeating: nil, count: end - begin + 1)
@@ -138,7 +144,7 @@ class ParallelMergeSorter<T> {
             i += 1
             k += 1
         }
-    }
+    } // [lines: 100]
     
     struct CancellationHandle {
         
@@ -151,5 +157,5 @@ class ParallelMergeSorter<T> {
         func cancel() {
             workItem.cancel()
         }
-    }
-}
+    } // [lines: 109]
+} // [lines: 110]

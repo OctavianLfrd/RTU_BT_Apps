@@ -5,34 +5,40 @@
 //  Created by Alfred Lapkovsky on 13/04/2022.
 //
 
+/**
+ 
+ MEANINGFUL LINES OF CODE: 188
+ 
+ */
+
 import Foundation
-import MetricKit
+import MetricKit // [lines: 2]
 
 
 protocol ContactStoreListener : AnyObject {
     func contactStore(_ contactStore: ContactStore, didUpdate contacts: [Contact])
-}
+} // [lines: 5]
 
-class ContactStore {
+class ContactStore { // [lines: 6]
     
-    static let shared = ContactStore()
+    static let shared = ContactStore() // [lines: 7]
     
     private static let fileName = "contacts"
-    private static let fileExtension = "json"
+    private static let fileExtension = "json" // [lines: 9]
     
     private let interactiveQueue: DispatchQueue
     private let utilityQueue: DispatchQueue
     private let targetQueue: DispatchQueue
-    private var timer: DispatchSourceTimer?
+    private var timer: DispatchSourceTimer? // [lines: 13]
     
     private let encoder = JSONEncoder()
-    private let decoder = JSONDecoder()
+    private let decoder = JSONDecoder() // [lines: 15]
     
     private var contactMap = [String : Contact]()
-    private var listeners = [ListenerWrapper]()
+    private var listeners = [ListenerWrapper]() // [lines: 17]
     
     private var isLoaded = false
-    private var hasContactsChanged = false
+    private var hasContactsChanged = false // [lines: 19]
     
     private struct ListenerWrapper {
         weak var listener: ContactStoreListener?
@@ -40,13 +46,13 @@ class ContactStore {
         init(_ listener: ContactStoreListener) {
             self.listener = listener
         }
-    }
+    } // [lines: 25]
     
     private init() {
         self.targetQueue = DispatchQueue(label: "ContactStore.TargetQeueu", qos: .default, target: .global())
         self.interactiveQueue = DispatchQueue(label: "ContactStore.InteractiveQueue", qos: .userInteractive, target: targetQueue)
         self.utilityQueue = DispatchQueue(label: "ContactStore.UtilityQueue", qos: .utility, target: targetQueue)
-    }
+    } // [lines: 30]
     
     func addListener(_ listener: ContactStoreListener) {
         interactiveQueue.async { [self, weak listener] in
@@ -63,7 +69,7 @@ class ContactStore {
             
             listeners.append(ListenerWrapper(listener))
         }
-    }
+    } // [lines: 44]
     
     func removeListener(_ listener: ContactStoreListener) {
         utilityQueue.async { [self, weak listener] in
@@ -79,7 +85,7 @@ class ContactStore {
                 listeners.remove(at: index)
             }
         }
-    }
+    } // [lines: 57]
     
     func load() {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
@@ -118,30 +124,24 @@ class ContactStore {
             
             notifyListenersContactsUpdated()
         }
-    }
+    } // [lines: 81]
     
     func getContacts(_ completion: @escaping ([Contact]) -> Void) {
         interactiveQueue.async { [self] in
             completion(Array(contactMap.values))
         }
-    }
+    } // [lines: 86]
     
     func storeContact(_ contact: Contact) {
         storeContacts([contact])
-    }
+    } // [lines: 89]
     
     func storeContacts(_ contacts: [Contact]) {
-        var firstEvent = true
-        
         utilityQueue.async { [self] in
-            if firstEvent {
-                firstEvent = false
-            } else {
-                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
-            }
+            mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
             
             defer {
-                mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
+                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
             }
             
             guard isLoaded else {
@@ -168,11 +168,11 @@ class ContactStore {
                 notifyListenersContactsUpdated()
             }
         }
-    }
+    } // [lines: 113]
     
     func deleteContact(_ identifier: String) {
         deleteContacts([identifier])
-    }
+    } // [lines: 116]
     
     func deleteContacts(_ identifiers: Set<String>) {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreDeleting)
@@ -199,7 +199,7 @@ class ContactStore {
                 notifyListenersContactsUpdated()
             }
         }
-    }
+    } // [lines: 133]
     
     private func startContactSaver(_ fileUrl: URL) {
         guard timer == nil else {
@@ -208,10 +208,16 @@ class ContactStore {
         
         Logger.i("Starting contact saver")
         
+        var firstEvent = true // Not counted because it is only used for mxSignpost
+        
         timer = DispatchSource.makeTimerSource(queue: utilityQueue)
         timer!.schedule(deadline: .now() + 2, repeating: .seconds(2), leeway: .milliseconds(500))
         timer!.setEventHandler { [self] in
-            mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreTimerFrequency)
+            if firstEvent { // Not counted because it is only used for mxSignpost
+                firstEvent = false
+            } else {
+                mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreTimerFrequency)
+            }
             
             defer {
                 mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreTimerFrequency)
@@ -237,14 +243,14 @@ class ContactStore {
         }
         
         timer!.resume()
-    }
+    } // [lines: 157]
     
     private func notifyListenersContactsUpdated() {
         listeners.removeAll { $0.listener == nil }
         listeners.forEach {
             $0.listener?.contactStore(self, didUpdate: Array(contactMap.values))
         }
-    }
+    } // [lines: 163]
     
     private func getOrCreateFile() -> URL? {
         guard let fileUrl = getFileUrl() else {
@@ -258,7 +264,7 @@ class ContactStore {
         }
         
         return fileUrl
-    }
+    } // [lines: 174]
     
     private func getFileUrl() -> URL? {
         guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
@@ -267,7 +273,7 @@ class ContactStore {
         
         return documentsDirectory.appendingPathComponent(Self.fileName).appendingPathExtension(Self.fileExtension)
     }
-}
+} // [lines: 181]
 
 extension ContactStore : Archivable {
     
@@ -276,4 +282,4 @@ extension ContactStore : Archivable {
             completion(getFileUrl())
         }
     }
-}
+} // [lines: 188]

@@ -5,21 +5,27 @@
 //  Created by Alfred Lapkovsky on 13/04/2022.
 //
 
+/**
+ 
+ MEANINGFUL LINES OF CODE: 116
+ 
+ */
+
 import Foundation
 import Contacts
-import MetricKit
+import MetricKit // [lines: 3]
 
 
-class ContactImporter {
+class ContactImporter { // [lines: 4]
     
-    typealias ImportCompletion = (Result) -> Void
+    typealias ImportCompletion = (Result) -> Void // [lines: 5]
     
-    static let shared = ContactImporter()
+    static let shared = ContactImporter() // [lines: 6]
     
-    private let queue = DispatchQueue(label: "ContactImporter.Queue", qos: .userInitiated, target: .global(qos: .userInitiated))
+    private let queue = DispatchQueue(label: "ContactImporter.Queue", qos: .userInitiated, target: .global(qos: .userInitiated)) // [lines: 7]
     
     private init() {
-    }
+    } // [lines: 9]
     
     func importContacts(completion: @escaping ImportCompletion) {
         Logger.i("Contact import started")
@@ -41,7 +47,6 @@ class ContactImporter {
                     completion(result)
                 }
             }
-            break
         case .notDetermined:
             Logger.i("Contact import authorization status notDetermined, requesting permission")
             
@@ -74,7 +79,7 @@ class ContactImporter {
             Logger.e("Contact import permission status unknown")
             completion(.permissionDenied)
         }
-    }
+    } // [lines: 45]
     
     private func _importContacts(_ store: CNContactStore, completion: ImportCompletion) {
         let keys = [
@@ -101,15 +106,15 @@ class ContactImporter {
             Logger.e("Contact import failed [error=\(error)]")
             completion(.failed)
         }
-    }
+    } // [lines: 67]
     
     enum Result {
         case success(contacts: [Contact])
         case permissionDenied
         case permissionDeniedExplicitly
         case failed
-    }
-}
+    } // [lines: 73]
+} // [lines: 74]
 
 private extension Contact {
     
@@ -159,4 +164,4 @@ private extension Contact {
 
         return Self.emailLabelMap[cnLabel] ?? Contact.emailLabelOther
     }
-}
+} // [lines: 116]

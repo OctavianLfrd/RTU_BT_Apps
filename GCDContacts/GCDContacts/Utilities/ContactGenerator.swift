@@ -5,24 +5,30 @@
 //  Created by Alfred Lapkovsky on 13/04/2022.
 //
 
+/**
+ 
+ MEANINGFUL LINES OF CODE: 110
+ 
+ */
+
 import Foundation
-import MetricKit
+import MetricKit // [lines: 2]
 
 
-class ContactGenerator {
+class ContactGenerator { // [lines: 3]
     
-    typealias GenerationCompletion = (Result) -> Void
+    typealias GenerationCompletion = (Result) -> Void // [lines: 4]
     
-    static let shared = ContactGenerator()
+    static let shared = ContactGenerator() // [lines: 5]
     
-    private static let maxConcurrentRequests = 3
+    private static let maxConcurrentRequests = 3 // [lines: 6]
     
     private var activeRequestCount = 0
     private var workingQueue = DispatchQueue(label: "ContactGenerator.Working", qos: .userInitiated, target: .global(qos: .userInitiated))
-    private var pendingRequests: [PendingRequest] = []
+    private var pendingRequests: [PendingRequest] = [] // [lines: 9]
     
     private init() {
-    }
+    } // [lines: 11]
     
     func generateContacts(_ count: Int, completion: @escaping GenerationCompletion) {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactGenerationSignpostName)
@@ -36,7 +42,7 @@ class ContactGenerator {
                 completion(result)
             }
         }
-    }
+    } // [lines: 18]
     
     private func _generateContacts(_ count: Int, completion: @escaping GenerationCompletion) {
         guard activeRequestCount < Self.maxConcurrentRequests else {
@@ -92,7 +98,7 @@ class ContactGenerator {
             }
         }
         .resume()
-    }
+    } // [lines: 65]
     
     private func createUserFetchRequest(_ count: Int) -> URLRequest? {
         guard count > 0, let url = composeUserFetchUrl(count) else {
@@ -103,7 +109,7 @@ class ContactGenerator {
         request.httpMethod = "GET"
         
         return request
-    }
+    } // [lines: 73]
     
     private func composeUserFetchUrl(_ count: Int) -> URL? {
         var components = URLComponents()
@@ -112,20 +118,20 @@ class ContactGenerator {
         components.path = "/api/"
         components.queryItems = [ URLQueryItem(name: "results", value: String(count)) ]
         return components.url
-    }
+    } // [lines: 81]
     
     
     struct PendingRequest {
         let count: Int
         let completion: GenerationCompletion
-    }
+    } // [lines: 85]
     
     enum Result {
         case success(contacts: [Contact])
         case requestFailed
         case parsingFailed
-    }
-}
+    } // [lines: 90]
+} // [lines: 91]
 
 
 private extension Contact {
@@ -149,4 +155,4 @@ private extension Contact {
         self.emailAddresses = !user.email.isEmpty ? [LabeledValue(label: Contact.emailLabelHome, value: user.email)] : []
         self.flags = .generated
     }
-}
+} // [lines: 110]

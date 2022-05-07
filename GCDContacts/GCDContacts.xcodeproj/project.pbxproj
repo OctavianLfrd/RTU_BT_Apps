@@ -13,6 +13,7 @@
 		B616EEFD28082A05005A15CC /* ContactViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B616EEFC28082A05005A15CC /* ContactViewModel.swift */; };
 		B63F68E7280DE1EA00B41D92 /* LabeledUIValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63F68E6280DE1EA00B41D92 /* LabeledUIValue.swift */; };
 		B63F68E9280DE31000B41D92 /* ContactComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B63F68E8280DE31000B41D92 /* ContactComponents.swift */; };
+		B64C71E228267DA000DAA839 /* CodeComplexity.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B64C71E128267DA000DAA839 /* CodeComplexity.rtf */; };
 		B67181A5280F3F5C008CFB14 /* MetricObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67181A4280F3F5C008CFB14 /* MetricObserver.swift */; };
 		B69653F128070E8A004C3C6C /* ContactImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69653F028070E8A004C3C6C /* ContactImporter.swift */; };
 		B69653F328072160004C3C6C /* ContactStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69653F228072160004C3C6C /* ContactStore.swift */; };
@@ -40,6 +41,7 @@
 		B616EEFC28082A05005A15CC /* ContactViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactViewModel.swift; sourceTree = "<group>"; };
 		B63F68E6280DE1EA00B41D92 /* LabeledUIValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabeledUIValue.swift; sourceTree = "<group>"; };
 		B63F68E8280DE31000B41D92 /* ContactComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactComponents.swift; sourceTree = "<group>"; };
+		B64C71E128267DA000DAA839 /* CodeComplexity.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = CodeComplexity.rtf; sourceTree = "<group>"; };
 		B67181A4280F3F5C008CFB14 /* MetricObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricObserver.swift; sourceTree = "<group>"; };
 		B69653F028070E8A004C3C6C /* ContactImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactImporter.swift; sourceTree = "<group>"; };
 		B69653F228072160004C3C6C /* ContactStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStore.swift; sourceTree = "<group>"; };
@@ -107,6 +109,7 @@
 				B69BB1162806EA3B00323DBD /* GCDContactsApp.swift */,
 				B69BB11A2806EA3F00323DBD /* Assets.xcassets */,
 				B69BB11C2806EA3F00323DBD /* Preview Content */,
+				B64C71E128267DA000DAA839 /* CodeComplexity.rtf */,
 			);
 			path = GCDContacts;
 			sourceTree = "<group>";
@@ -226,6 +229,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B69BB11E2806EA3F00323DBD /* Preview Assets.xcassets in Resources */,
+				B64C71E228267DA000DAA839 /* CodeComplexity.rtf in Resources */,
 				B69BB11B2806EA3F00323DBD /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

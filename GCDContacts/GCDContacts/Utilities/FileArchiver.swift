@@ -5,25 +5,31 @@
 //  Created by Alfred Lapkovsky on 19/04/2022.
 //
 
-import Foundation
+/**
+ 
+ MEANINGFUL LINES OF CODE: 108
+ 
+ */
+
+import Foundation // [lines: 1]
 
 
 protocol Archivable {
     func getArchivableUrl(_ completion: @escaping (URL?) -> Void)
-}
+} // [lines: 4]
 
-class FileArchiver {
+class FileArchiver { // [lines: 5]
     
-    static let shared = FileArchiver()
+    static let shared = FileArchiver() // [lines: 6]
     
-    private let queue = DispatchQueue(label: "FileArchiver.Queue", qos: .userInitiated, target: .global(qos: .userInitiated))
+    private let queue = DispatchQueue(label: "FileArchiver.Queue", qos: .userInitiated, target: .global(qos: .userInitiated)) // [lines: 7]
     
     private init() {
-    }
+    } // [lines: 9]
     
     func archive(_ archivables: Archivable..., completion: @escaping (URL?) -> Void) {
         archive(archivables, completion: completion)
-    }
+    } // [lines: 12]
     
     func archive(_ archivables: [Archivable], completion: @escaping (URL?) -> Void) {
         Logger.i("Archiving contents")
@@ -60,7 +66,7 @@ class FileArchiver {
             
             completion(resultFile)
         }
-    }
+    } // [lines: 40]
     
     private func filterContentUrls(_ urls: [URL?]) -> [URL]? {
         let validUrls = urls.compactMap { $0 }
@@ -71,7 +77,7 @@ class FileArchiver {
             Logger.e("No content urls acquired")
             return nil
         }
-    }
+    } // [lines: 49]
     
     private func archiveContent(_ url: URL) -> URL? {
         let appName = Bundle.main.infoDictionary![kCFBundleNameKey as String]!
@@ -106,7 +112,7 @@ class FileArchiver {
         }
         
         return resultFile
-    }
+    } // [lines: 77]
     
     private func storeContentsAtTempLocation(_ urls: [URL]) -> URL? {
         Logger.d("Storing contents at temporary directory")
@@ -144,5 +150,5 @@ class FileArchiver {
             Logger.d("No content stored at temporary directory")
             return nil
         }
-    }
-}
+    } // [lines: 107]
+} // [lines: 108]
