@@ -9,6 +9,8 @@
  
  MEANINGFUL LINES OF CODE: 188
  
+ TOTAL DEPENDENCY DEGREE: 111
+ 
  */
 
 import Foundation
@@ -43,62 +45,74 @@ class ContactStore { // [lines: 6]
     private struct ListenerWrapper {
         weak var listener: ContactStoreListener?
         
+        // [dd: 1]
         init(_ listener: ContactStoreListener) {
-            self.listener = listener
+            self.listener = listener // [rd: { init listener } (1)]
         }
     } // [lines: 25]
     
+    // [dd: 2]
     private init() {
         self.targetQueue = DispatchQueue(label: "ContactStore.TargetQeueu", qos: .default, target: .global())
-        self.interactiveQueue = DispatchQueue(label: "ContactStore.InteractiveQueue", qos: .userInteractive, target: targetQueue)
-        self.utilityQueue = DispatchQueue(label: "ContactStore.UtilityQueue", qos: .utility, target: targetQueue)
+        self.interactiveQueue = DispatchQueue(label: "ContactStore.InteractiveQueue", qos: .userInteractive, target: targetQueue) // [rd: { self.targetQueue = ... } (1)]
+        self.utilityQueue = DispatchQueue(label: "ContactStore.UtilityQueue", qos: .utility, target: targetQueue) // [rd: { self.targetQueue = ... } (1)]
     } // [lines: 30]
     
+    // [dd: 2]
     func addListener(_ listener: ContactStoreListener) {
-        interactiveQueue.async { [self, weak listener] in
+        // closure: [dd: 7]
+        interactiveQueue.async { [self, weak listener] in // [rd: { init interactiveQueue, init listener } (2)]
             defer {
-                listeners.removeAll { $0.listener == nil }
+                // closure: [dd: 1]
+                listeners.removeAll { $0.listener == nil /* [rd: { init $0.listener } (1)] */ } // [rd: { init listeners, listeners.append(ListenerWrapper(listener)) } (2)]
             }
             
             guard
                 let listener = listener,
-                !listeners.contains(where: { $0.listener === listener })
+                // closure: [dd: 2]
+                !listeners.contains(where: { $0.listener === listener } /* [rd: { let listener, init $0.listener } (2)] */ ) // [rd: { init listener, init listeners, let listener } (3)]
             else {
                 return
             }
             
-            listeners.append(ListenerWrapper(listener))
+            listeners.append(ListenerWrapper(listener)) // [rd: { init listeners, let listener } (2)]
         }
     } // [lines: 44]
     
+    // [dd: 2]
     func removeListener(_ listener: ContactStoreListener) {
-        utilityQueue.async { [self, weak listener] in
+        // closure: [dd: 7]
+        utilityQueue.async { [self, weak listener] in // [rd: { init utilityQueue, init listener } (2)]
             defer {
-                listeners.removeAll(where: { $0.listener == nil })
+                // closure: [dd: 1]
+                listeners.removeAll(where: { $0.listener == nil } /* [rd: { init $0.listener } (1)] */ ) // [rd: { init listeners, listeners.remove(at: index) } (2)]
             }
             
-            guard let listener = listener else {
+            guard let listener = listener else { // [rd: { init listener } (1)]
                 return
             }
             
-            if let index = listeners.firstIndex(where: { $0.listener === listener }) {
-                listeners.remove(at: index)
+            // closure: [dd: 2]
+            if let index = listeners.firstIndex(where: { $0.listener === listener } /* [rd: { init $0.listener, let listener } (2)] */) { // [rd: { init listeners, let listener } (2)]
+                listeners.remove(at: index) // [rd: { init listeners, let index } (2)]
             }
         }
     } // [lines: 57]
     
+    // [dd: 1]
     func load() {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
         
-        interactiveQueue.async { [self] in
+        // closure: [dd: 11]
+        interactiveQueue.async { [self] in // [rd: { init interactiveQueue } (1)]
             defer {
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
             }
             
-            Logger.i("Trying to load contacts from persistent storage")
+            Logger.i("Trying to load contacts from persistent storage") // [rd: { init Logger } (1)]
             
-            guard !isLoaded else {
-                Logger.v("Contacts already loaded")
+            guard !isLoaded else { // [rd: { init isLoaded } (1)]
+                Logger.v("Contacts already loaded") // [rd: { init Logger } (1)]
                 return
             }
             
@@ -107,112 +121,122 @@ class ContactStore { // [lines: 6]
             }
             
             guard let fileUrl = getOrCreateFile() else {
-                Logger.e("getOrCreateFile() returned nil while loading contacts")
+                Logger.e("getOrCreateFile() returned nil while loading contacts") // [rd: { init Logger } (1)]
                 return
             }
 
-            startContactSaver(fileUrl)
+            startContactSaver(fileUrl) // [rd: { let fileUrl } (1)]
             
-            guard let contents = FileManager.default.contents(atPath: fileUrl.path) else {
-                Logger.e("Contact file contents are nil")
+            guard let contents = FileManager.default.contents(atPath: fileUrl.path) else { // [rd: { (let fileUrl).path } (1)]
+                Logger.e("Contact file contents are nil") // [rd: { init Logger } (1)]
                 return
             }
             
-            contactMap = (try? decoder.decode([String : Contact].self, from: contents)) ?? [:]
+            contactMap = (try? decoder.decode([String : Contact].self, from: contents)) ?? [:] // [rd: { init decoder, let contents } (2)]
             
-            Logger.i("Contacts are successfully loaded")
+            Logger.i("Contacts are successfully loaded") // [rd: { init Logger } (1)]
             
             notifyListenersContactsUpdated()
         }
     } // [lines: 81]
     
+    // [dd: 2]
     func getContacts(_ completion: @escaping ([Contact]) -> Void) {
-        interactiveQueue.async { [self] in
-            completion(Array(contactMap.values))
+        // closure: [dd: 2]
+        interactiveQueue.async { [self] in // [rd: { init interactiveQueue, init completion } (2)]
+            completion(Array(contactMap.values)) // [rd: { init completion, init contactMap.values } (2)]
         }
     } // [lines: 86]
     
+    // [dd: 1]
     func storeContact(_ contact: Contact) {
-        storeContacts([contact])
+        storeContacts([contact]) // [rd: { init contact } (1)]
     } // [lines: 89]
     
+    // [dd: 2]
     func storeContacts(_ contacts: [Contact]) {
-        utilityQueue.async { [self] in
+        // closure: [dd: 17]
+        utilityQueue.async { [self] in // [rd: { init utilityQueue, init contacts } (2)]
             mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
             
             defer {
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
             }
             
-            guard isLoaded else {
+            guard isLoaded else { // [rd: { init isLoaded } (1)]
                 fatalError()
             }
             
             var updated = false
             
-            for contact in contacts {
-                if contactMap.keys.contains(contact.identifier) {
-                    if contact != contactMap[contact.identifier]! {
-                        contactMap[contact.identifier] = contact
+            for contact in contacts { // [rd: { init contacts } (1)]
+                if contactMap.keys.contains(contact.identifier) { // [rd: { init contactMap.keys, (contactMap[contact.identifier] = ...) x 2, (for contact).identifier } (4)]
+                    if contact != contactMap[contact.identifier]! { // [rd: { (for contact), (for contact).identifier, init contactMap, (contactMap[contact.identifier] = ...) x 2 } (5)]
+                        contactMap[contact.identifier] = contact // [rd: { (for contact) } (1)]
                         updated = true
                     }
                 } else {
-                    contactMap[contact.identifier] = contact
+                    contactMap[contact.identifier] = contact // [rd: { (for contact)) } (1)]
                     updated = true
                 }
             }
             
-            if updated {
-                Logger.i("Stored contact updates")
+            if updated { // [rd: { var updated = false, updated = true, updated = true } (3)]
+                Logger.i("Stored contact updates") // [rd: { init Logger } (1)]
                 hasContactsChanged = true
                 notifyListenersContactsUpdated()
             }
         }
     } // [lines: 113]
     
+    // [dd: 1]
     func deleteContact(_ identifier: String) {
-        deleteContacts([identifier])
+        deleteContacts([identifier]) // [rd: { init identifier } (1)]
     } // [lines: 116]
     
+    // [dd: 2]
     func deleteContacts(_ identifiers: Set<String>) {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreDeleting)
-        
-        utilityQueue.async { [self] in
+        // closure: [dd: 10]
+        utilityQueue.async { [self] in // [rd: { init identifiers, init utilityQueue } (2)]
             defer {
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreDeleting)
             }
             
-            guard isLoaded else {
+            guard isLoaded else { // [rd: { init isLoaded } (1)]
                 fatalError()
             }
             
             var deleted = false
             
-            for identifier in identifiers where contactMap.keys.contains(identifier) {
-                contactMap.removeValue(forKey: identifier)
+            for identifier in identifiers where contactMap.keys.contains(identifier) { // [rd: { init identifiers, init contactMap.keys, contactMap.removeValue(...), (for identifier) } (4)]
+                contactMap.removeValue(forKey: identifier) // [rd: { init contactMap, contactMap.removeValue(...) } (2)]
                 deleted = true
             }
             
-            if deleted {
-                Logger.i("Deleted some contacts")
+            if deleted { // [rd: { var deleted = false, deleted = true } (2)]
+                Logger.i("Deleted some contacts") // [rd: { init Logger } (1)]
                 hasContactsChanged = true
                 notifyListenersContactsUpdated()
             }
         }
     } // [lines: 133]
     
+    // [dd: 7]
     private func startContactSaver(_ fileUrl: URL) {
-        guard timer == nil else {
+        guard timer == nil else { // [rd: { init timer } (1)]
             return
         }
         
-        Logger.i("Starting contact saver")
+        Logger.i("Starting contact saver") // [rd: { init Logger } (1)]
         
         var firstEvent = true // Not counted because it is only used for mxSignpost
         
-        timer = DispatchSource.makeTimerSource(queue: utilityQueue)
-        timer!.schedule(deadline: .now() + 2, repeating: .seconds(2), leeway: .milliseconds(500))
-        timer!.setEventHandler { [self] in
+        timer = DispatchSource.makeTimerSource(queue: utilityQueue) // [rd: { init utilityQueue } (1)]
+        timer!.schedule(deadline: .now() + 2, repeating: .seconds(2), leeway: .milliseconds(500)) // [rd: { timer = DispatchSource... } (1)]
+        
+        // closure: [dd: 10]
+        timer!.setEventHandler { [self] in // [rd: { timer = DispatchSource..., init fileUrl } (2)]
             if firstEvent { // Not counted because it is only used for mxSignpost
                 firstEvent = false
             } else {
@@ -223,63 +247,70 @@ class ContactStore { // [lines: 6]
                 mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreTimerFrequency)
             }
             
-            Logger.v("Checking for contact updates")
+            Logger.v("Checking for contact updates") // [rd: { init Logger } (1)]
             
-            guard hasContactsChanged else {
+            guard hasContactsChanged else { // [rd: { init hasContactsChanged } (1)]
                 return
             }
             
-            Logger.i("Contacts changed, storing changes to persistent storage")
+            Logger.i("Contacts changed, storing changes to persistent storage") // [rd: { init Logger } (1)]
             
             hasContactsChanged = false
                         
             do {
-                let data = try encoder.encode(contactMap)
-                try data.write(to: fileUrl)
-                Logger.i("Contact changes stored to persistent storage successfully")
+                let data = try encoder.encode(contactMap) // [rd: { init encoder, init contactMap } (2)]
+                try data.write(to: fileUrl) // [rd: { let data, init fileUrl } (2)]
+                Logger.i("Contact changes stored to persistent storage successfully") // [rd: { init Logger } (1)]
             } catch {
-                Logger.e("Failed to store contact changes to persistent storage [error=\(error)]")
+                Logger.e("Failed to store contact changes to persistent storage [error=\(error)]") // [rd: { init Logger, init error } (2)]
             }
         }
         
-        timer!.resume()
+        timer!.resume() // [rd: { timer = DispatchSource... } (1)]
     } // [lines: 157]
     
+    // [dd: 2]
     private func notifyListenersContactsUpdated() {
-        listeners.removeAll { $0.listener == nil }
-        listeners.forEach {
-            $0.listener?.contactStore(self, didUpdate: Array(contactMap.values))
+        // closure: [dd: 1]
+        listeners.removeAll { $0.listener == nil /* [rd: { init $0.listener } (1)] */  } // [rd: { init listeners } (1)]
+        // closure: [dd: 2]
+        listeners.forEach { // [rd: { listeners.removeAll() } (1)]
+            $0.listener?.contactStore(self, didUpdate: Array(contactMap.values)) // [rd: { init $0.listener, init contactMap.values } (2)]
         }
     } // [lines: 163]
     
+    // [dd: 6]
     private func getOrCreateFile() -> URL? {
         guard let fileUrl = getFileUrl() else {
             return nil
         }
         
-        if !FileManager.default.fileExists(atPath: fileUrl.path) {
-            if FileManager.default.createFile(atPath: fileUrl.path, contents: nil, attributes: nil) {
-                return fileUrl
+        if !FileManager.default.fileExists(atPath: fileUrl.path) { // [rd: { (let fileUrl).path, FileManager.default } (2)]
+            if FileManager.default.createFile(atPath: fileUrl.path, contents: nil, attributes: nil) { // [rd: { FileManager.default, (let fileUrl.path) } (2)]
+                return fileUrl // [rd: { let fileUrl } (1)]
             }
         }
         
-        return fileUrl
+        return fileUrl // [rd: { let fileUrl } (1)]
     } // [lines: 174]
     
+    // [dd: 4]
     private func getFileUrl() -> URL? {
-        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { // [rd: { FileManager.default } (1)]
             return nil
         }
         
-        return documentsDirectory.appendingPathComponent(Self.fileName).appendingPathExtension(Self.fileExtension)
+        return documentsDirectory.appendingPathComponent(Self.fileName).appendingPathExtension(Self.fileExtension) // [rd: { let documentsDirectory, init Self.fileName, init Self.fileExtension } (3)]
     }
 } // [lines: 181]
 
 extension ContactStore : Archivable {
-    
+
+    // [dd: 2]
     func getArchivableUrl(_ completion: @escaping (URL?) -> Void) {
-        interactiveQueue.async { [self] in
-            completion(getFileUrl())
+        // closure: [dd: 1]
+        interactiveQueue.async { [self] in // [rd: { init interactiveQueue, init completion } (2)]
+            completion(getFileUrl()) // [rd: { init completion } (1)]
         }
     }
 } // [lines: 188]

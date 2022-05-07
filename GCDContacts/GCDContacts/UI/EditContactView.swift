@@ -80,31 +80,37 @@ struct EditContactView: View {
      
      MEANINGFUL LINES OF CODE: 20
      
+     TOTAL DEPENDENCY DEGREE: 18
+     
      */
     
+    // [dd: 9]
     private func saveContact() {
-        guard let oldContact = viewModel.contact else {
+        guard let oldContact = viewModel.contact else { // [rd: { init viewModel.contact } (1)]
             return
         }
         
         let contact = Contact(identifier: oldContact.identifier,
                               firstName: firstName,
                               lastName: lastName,
-                              phoneNumbers: phoneNumbers.filter { !$0.value.isEmpty }.map { LabeledValue(label: $0.label, value: $0.value) },
-                              emailAddresses: emailAddresses.filter { !$0.value.isEmpty }.map { LabeledValue(label: $0.label, value: $0.value) },
-                              flags: oldContact.flags)
+                              // closure #1: [dd: 1]; closure #2: [dd: 2]
+                              phoneNumbers: phoneNumbers.filter { !$0.value.isEmpty /* [rd: { init $0.value } (1)] */ }.map { LabeledValue(label: $0.label, value: $0.value) /* [rd: { init $0.label, $0.value } (2)] */ },
+                              // closure #1: [dd: 1]; closure #2: [dd: 2]
+                              emailAddresses: emailAddresses.filter { !$0.value.isEmpty /* [rd: { init $0.value } (1)] */}.map { LabeledValue(label: $0.label, value: $0.value) /* [rd: { init $0.label, $0.value } (2)] */ },
+                              flags: oldContact.flags) // [rd: { init oldContact.identifier, init firstName, init lastName, init phoneNumbers, init emailAddresses, init oldContact.flags } (6)]
         
-        ContactStore.shared.storeContact(contact)
+        ContactStore.shared.storeContact(contact) // [rd: { init ContactStore.shared, let contact } (2)]
         
         dismiss()
     } // [lines: 13]
     
+    // [dd: 3]
     private func deleteContact() {
-        guard let identifier = viewModel.contact?.identifier else {
+        guard let identifier = viewModel.contact?.identifier else { // [rd: { init viewModel.contact?.identifier } (1)]
             return
         }
         
-        ContactStore.shared.deleteContact(identifier)
+        ContactStore.shared.deleteContact(identifier) // [rd: { init ContactStore.shared, let identifier } (2)]
         
         dismiss()
     } // [lines: 20]
