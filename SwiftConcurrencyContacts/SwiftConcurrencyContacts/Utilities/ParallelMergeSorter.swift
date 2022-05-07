@@ -5,12 +5,18 @@
 //  Created by Alfred Lapkovsky on 30/04/2022.
 //
 
-import Foundation
+/**
+ 
+ MEANINGFUL LINES OF CODE: 102
+ 
+ */
+
+import Foundation // [lines: 1]
 
 
-class ParallelMergeSorter<T> {
+class ParallelMergeSorter<T> { // [lines: 2]
     
-    typealias Comparator = (T, T) -> Bool
+    typealias Comparator = (T, T) -> Bool // [lines: 3]
     
     func sort(_ array: [T], parallelismLevel: Int = ProcessInfo.processInfo.processorCount, comparator: @escaping Comparator) async throws -> [T] {
         return try await withThrowingTaskGroup(of: (index: Int, array: [T]).self) { group in
@@ -70,7 +76,7 @@ class ParallelMergeSorter<T> {
             
             return array
         }
-    }
+    } // [lines: 47]
     
     private func mergeSort(_ array: inout [T], begin: Int, end: Int, comparator: Comparator) {
         guard begin < end, !Task.isCancelled else {
@@ -83,7 +89,7 @@ class ParallelMergeSorter<T> {
         mergeSort(&array, begin: middle + 1, end: end, comparator: comparator)
         
         merge(&array, begin: begin, middle: middle, end: end, comparator: comparator)
-    }
+    } // [lines: 56]
     
     private func merge(_ array: inout [T], begin: Int, middle: Int, end: Int, comparator: Comparator) {
         var temp = Array<T?>.init(repeating: nil, count: end - begin + 1)
@@ -140,4 +146,4 @@ class ParallelMergeSorter<T> {
             k += 1
         }
     }
-}
+} // [lines: 102]

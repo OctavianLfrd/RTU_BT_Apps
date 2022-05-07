@@ -5,18 +5,24 @@
 //  Created by Alfred Lapkovsky on 26/04/2022.
 //
 
+/**
+ 
+ MEANINGFUL LINES OF CODE: 82
+ 
+ */
+
 import Foundation
-import MetricKit
+import MetricKit // [lines: 2]
 
 
-class ContactGenerator {
+class ContactGenerator { // [lines: 3]
     
-    static let shared = ContactGenerator()
+    static let shared = ContactGenerator() // [lines: 4]
     
-    private let semaphore = AsyncSemaphore(3)
+    private let semaphore = AsyncSemaphore(3) // [lines: 5]
     
     private init() {
-    }
+    } // [lines: 7]
     
     func generateContacts(_ count: Int) async throws -> [Contact] {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactGenerationSignpostName)
@@ -63,7 +69,7 @@ class ContactGenerator {
                 throw Error.parsingFailed
             }
         }
-    }
+    } // [lines: 42]
     
     private func createUserFetchRequest(_ count: Int) -> URLRequest? {
         guard count > 0, let url = composeUserFetchUrl(count) else {
@@ -74,7 +80,7 @@ class ContactGenerator {
         request.httpMethod = "GET"
         
         return request
-    }
+    } // [lines: 50]
     
     private func composeUserFetchUrl(_ count: Int) -> URL? {
         var components = URLComponents()
@@ -83,13 +89,13 @@ class ContactGenerator {
         components.path = "/api/"
         components.queryItems = [ URLQueryItem(name: "results", value: String(count)) ]
         return components.url
-    }
+    } // [lines: 58]
     
     enum Error : Swift.Error {
         case requestFailed
         case parsingFailed
-    }
-}
+    } // [lines: 62]
+} // [lines: 63]
 
 private extension Contact {
     
@@ -112,4 +118,4 @@ private extension Contact {
         self.emailAddresses = !user.email.isEmpty ? [LabeledValue(label: Contact.emailLabelHome, value: user.email)] : []
         self.flags = .generated
     }
-}
+} // [lines: 82]

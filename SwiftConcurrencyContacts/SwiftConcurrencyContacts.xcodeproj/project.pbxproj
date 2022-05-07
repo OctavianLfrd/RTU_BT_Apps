@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B64C71E6282690EC00DAA839 /* CodeComplexity.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B64C71E5282690EC00DAA839 /* CodeComplexity.rtf */; };
 		B6B93B152817448E00737F4E /* SwiftConcurrencyContactsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B93B142817448E00737F4E /* SwiftConcurrencyContactsApp.swift */; };
 		B6B93B172817448E00737F4E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6B93B162817448E00737F4E /* ContentView.swift */; };
 		B6B93B192817449000737F4E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6B93B182817449000737F4E /* Assets.xcassets */; };
@@ -35,6 +36,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B64C71E5282690EC00DAA839 /* CodeComplexity.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = CodeComplexity.rtf; sourceTree = "<group>"; };
 		B6B93B112817448E00737F4E /* SwiftConcurrencyContacts.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftConcurrencyContacts.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6B93B142817448E00737F4E /* SwiftConcurrencyContactsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftConcurrencyContactsApp.swift; sourceTree = "<group>"; };
 		B6B93B162817448E00737F4E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 				B6B93B142817448E00737F4E /* SwiftConcurrencyContactsApp.swift */,
 				B6B93B182817449000737F4E /* Assets.xcassets */,
 				B6B93B1A2817449000737F4E /* Preview Content */,
+				B64C71E5282690EC00DAA839 /* CodeComplexity.rtf */,
 			);
 			path = SwiftConcurrencyContacts;
 			sourceTree = "<group>";
@@ -229,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6B93B1C2817449000737F4E /* Preview Assets.xcassets in Resources */,
+				B64C71E6282690EC00DAA839 /* CodeComplexity.rtf in Resources */,
 				B6B93B192817449000737F4E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

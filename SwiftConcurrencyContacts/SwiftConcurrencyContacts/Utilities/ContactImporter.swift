@@ -5,17 +5,23 @@
 //  Created by Alfred Lapkovsky on 30/04/2022.
 //
 
+/**
+ 
+ MEANINGFUL LINES OF CODE: 106
+ 
+ */
+
 import Foundation
 import Contacts
-import MetricKit
+import MetricKit // [lines: 3]
 
 
-class ContactImporter {
+class ContactImporter { // [lines: 4]
     
-    static let shared = ContactImporter()
+    static let shared = ContactImporter() // [lines: 5]
     
     private init() {
-    }
+    } // [lines: 7]
     
     func importContacts() async throws -> [Contact] {
         Logger.i("Contact import started")
@@ -60,7 +66,7 @@ class ContactImporter {
             Logger.e("Contact import permission status unknown")
             throw Error.permissionDenied
         }
-    }
+    } // [lines: 32]
     
     private func _importContacts(_ store: CNContactStore) async throws -> [Contact] {
         return try await withUnsafeThrowingContinuation { continuation in
@@ -91,14 +97,14 @@ class ContactImporter {
                 }
             }
         }
-    }
+    } // [lines: 58]
     
     enum Error : Swift.Error {
         case permissionDenied
         case permissionDeniedExplicitly
         case failed
-    }
-}
+    } // [lines: 63]
+} // [lines: 64]
 
 private extension Contact {
     
@@ -148,4 +154,4 @@ private extension Contact {
 
         return Self.emailLabelMap[cnLabel] ?? Contact.emailLabelOther
     }
-}
+} // [lines: 106]

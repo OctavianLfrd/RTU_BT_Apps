@@ -5,23 +5,29 @@
 //  Created by Alfred Lapkovsky on 30/04/2022.
 //
 
-import Foundation
+/**
+ 
+ MEANINGFUL LINES OF CODE: 92
+ 
+ */
+
+import Foundation // [lines: 1]
 
 
 protocol Archivable {
     func getArchivableUrl() async -> URL?
-}
+} // [lines: 4]
 
-actor FileArchiver {
+actor FileArchiver { // [lines: 5]
     
-    static let shared = FileArchiver()
+    static let shared = FileArchiver() // [lines: 6]
     
     private init() {
-    }
+    } // [lines: 8]
     
     func archive(_ archivables: Archivable...) async -> URL? {
         return await archive(archivables)
-    }
+    } // [lines: 11]
     
     func archive(_ archivables: [Archivable]) async -> URL? {
         Logger.i("Archiving contents")
@@ -51,7 +57,7 @@ actor FileArchiver {
             
             return resultFile
         }
-    }
+    } // [lines: 33]
     
     private func archiveContent(_ url: URL) -> URL? {
         let appName = Bundle.main.infoDictionary![kCFBundleNameKey as String]!
@@ -86,7 +92,7 @@ actor FileArchiver {
         }
         
         return resultFile
-    }
+    } // [lines: 61]
     
     private func storeContentsAtTempLocation(_ urls: [URL]) -> URL? {
         Logger.d("Storing contents at temporary directory")
@@ -124,5 +130,5 @@ actor FileArchiver {
             Logger.d("No content stored at temporary directory")
             return nil
         }
-    }
-}
+    } // [lines: 91]
+} // [lines: 92]

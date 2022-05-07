@@ -5,19 +5,25 @@
 //  Created by Alfred Lapkovsky on 30/04/2022.
 //
 
-import Foundation
+/**
+ 
+ MEANINGFUL LINES OF CODE: 34
+ 
+ */
+
+import Foundation // [lines: 1]
 
 
-actor AsyncSemaphore {
+actor AsyncSemaphore { // [lines: 2]
     
     private let limit: Int
     private var count = 0
-    private var queue = [UnsafeContinuation<Void, Never>]()
+    private var queue = [UnsafeContinuation<Void, Never>]() // [lines: 5]
     
     init(_ limit: Int = 1) {
         precondition(limit > 0)
         self.limit = limit
-    }
+    } // [lines: 9]
     
     func acquire() async {
         if count < limit {
@@ -27,7 +33,7 @@ actor AsyncSemaphore {
                 queue.append(continuation)
             }
         }
-    }
+    } // [lines: 18]
     
     func release() {
         precondition(count > 0)
@@ -37,7 +43,7 @@ actor AsyncSemaphore {
         } else {
             queue.removeFirst().resume()
         }
-    }
+    } // [lines: 26]
     
     func synchronize<T>(_ block: @Sendable () async throws -> T) async rethrows -> T {
         await acquire()
@@ -47,5 +53,5 @@ actor AsyncSemaphore {
         }
         
         return try await block()
-    }
-}
+    } // [lines: 33]
+} // [lines: 34]

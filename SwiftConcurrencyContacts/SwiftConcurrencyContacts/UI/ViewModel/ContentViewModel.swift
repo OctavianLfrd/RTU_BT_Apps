@@ -5,26 +5,32 @@
 //  Created by Alfred Lapkovsky on 30/04/2022.
 //
 
+/**
+ 
+ MEANINGFUL LINES OF CODE: 99
+ 
+ */
+
 import Foundation
 import MetricKit
-import UIKit
+import UIKit // [lines: 3]
 
 
 @MainActor
-class ContentViewModel : ObservableObject {
+class ContentViewModel : ObservableObject { // [lines: 5]
     
     @Published private(set) var contacts = [Contact]()
     @Published private(set) var isLoading = false
-    @Published private(set) var sortType = SortType.auto
+    @Published private(set) var sortType = SortType.auto // [lines: 8]
     
     private let contactSorter = ParallelMergeSorter<Contact>()
-    private var sortTask: Task<[Contact]?, Never>?
+    private var sortTask: Task<[Contact]?, Never>? // [lines: 10]
     
     init() {
         Task(priority: .high) {
             await ContactStore.shared.addListener(self)
         }
-    }
+    } // [lines: 15]
     
     func load() {
         isLoading = true
@@ -33,7 +39,7 @@ class ContentViewModel : ObservableObject {
             await ContactStore.shared.load()
             mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
         }
-    }
+    } // [lines: 21]
     
     func importContacts() {
         Task(priority: .high) {
@@ -43,7 +49,7 @@ class ContentViewModel : ObservableObject {
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
             }
         }
-    }
+    } // [lines: 28]
     
     func generateContacts() {
         Task(priority: .high) {
@@ -53,7 +59,7 @@ class ContentViewModel : ObservableObject {
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
             }
         }
-    }
+    } // [lines: 35]
     
     func exportAppContents() {
         mxSignpost(.begin, log: MetricObserver.fileExportLogHandle, name: MetricObserver.fileExportSignpostName)
@@ -74,7 +80,7 @@ class ContentViewModel : ObservableObject {
             
             windowScene.keyWindow?.rootViewController?.present(activityViewController, animated: true, completion: nil)
         }
-    }
+    } // [lines: 47]
     
     func updateSortType(_ sortType: SortType) {
         guard self.sortType != sortType else {
@@ -88,7 +94,7 @@ class ContentViewModel : ObservableObject {
                 self.contacts = contacts
             }
         }
-    }
+    } // [lines: 58]
     
     private func sortContacts(_ contacts: [Contact]) async -> [Contact]? {
         sortTask?.cancel()
@@ -109,7 +115,7 @@ class ContentViewModel : ObservableObject {
             
             return await sortTask?.value
         }
-    }
+    } // [lines: 70]
     
     private func getSortComparator() -> ParallelMergeSorter<Contact>.Comparator {
         switch sortType {
@@ -122,15 +128,15 @@ class ContentViewModel : ObservableObject {
         case .random:
             fatalError("Unsupported sort type")
         }
-    }
+    } // [lines: 82]
     
     enum SortType {
         case auto
         case firstName
         case lastName
         case random
-    }
-}
+    } // [lines: 88]
+} // [lines: 89]
 
 extension ContentViewModel : ContactStoreListener {
     
@@ -142,4 +148,4 @@ extension ContentViewModel : ContactStoreListener {
             }
         }
     }
-}
+} // [lines: 99]
