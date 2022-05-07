@@ -12,7 +12,7 @@ protocol Archivable {
     func getArchivableUrl() async -> URL?
 }
 
-class FileArchiver {
+actor FileArchiver {
     
     static let shared = FileArchiver()
     
