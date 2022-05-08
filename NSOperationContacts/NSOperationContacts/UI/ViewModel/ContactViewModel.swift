@@ -9,7 +9,7 @@
  
  MEANINGFUL LINES OF CODE: 42
  
- TOTAL DEPENDENCY DEGREE: 25
+ TOTAL DEPENDENCY DEGREE: 24
  
  */
 
@@ -23,9 +23,9 @@ class ContactViewModel : ObservableObject { // [lines: 2]
     @Published private(set) var contact: Contact?
     private var contactIdentifier: String? // [lines: 5]
     
-    // [dd: 14]
+    // [dd: 13]
     static func shared(for contact: Contact) -> ContactViewModel {
-        for id in viewModels.keys.reversed() { // [rd: { init viewModels.keys } (1)]
+        for id in viewModels.keys.reversed() {
             if viewModels[id]!.model == nil { // [rd: { init viewModels, (for id) } (2)]
                 viewModels.removeValue(forKey: id) // [rd: { init viewModels, viewModels.removeValue(...), id } (3)]
             }

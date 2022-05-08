@@ -9,7 +9,7 @@
  
  MEANINGFUL LINES OF CODE: 92
  
- TOTAL DEPENDENCY DEGREE: 63
+ TOTAL DEPENDENCY DEGREE: 61
  
  */
 
@@ -36,9 +36,9 @@ actor FileArchiver { // [lines: 5]
     func archive(_ archivables: [Archivable]) async -> URL? {
         Logger.i("Archiving contents") // [rd: { init Logger } (1)]
         
-        // closure: [dd: 13]
+        // closure: [dd: 12]
         return await withTaskGroup(of: URL?.self) { group in // [rd: { init archivables } (1)]
-            for archivable in archivables { // [rd: { init archivables } (1)]
+            for archivable in archivables {
                 // closure: [dd: 1]
                 group.addTask { // [rd: { init group, (for archivable) } (2)]
                     await archivable.getArchivableUrl() // [rd: { init archivable } (1)]
@@ -102,7 +102,7 @@ actor FileArchiver { // [lines: 5]
         return resultFile // [rd: { let resultFile } (1)]
     } // [lines: 61]
     
-    // [dd: 22]
+    // [dd: 21]
     private func storeContentsAtTempLocation(_ urls: [URL]) -> URL? {
         Logger.d("Storing contents at temporary directory") // [rd: { init Logger } (1)]
         
@@ -117,7 +117,7 @@ actor FileArchiver { // [lines: 5]
         
         var contentStored = false
         
-        for url in urls { // [rd: { init urls } (1)]
+        for url in urls {
             var isDirectory: ObjCBool = false
             
             if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) { // [rd: { init FileManager.default, (for url).path, var isDirectory } (3)]

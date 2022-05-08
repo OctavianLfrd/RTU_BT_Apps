@@ -32,21 +32,21 @@ class ContactGenerator { // [lines: 3]
     private init() {
     } // [lines: 11]
     
-    // [dd: 3]
-    func generateContacts(_ count: Int, completion: @escaping GenerationCompletion) {
-        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactGenerationSignpostName)
-        // closure: [dd: 2]
-        workingQueue.async { // [rd: { init count, init completion, init workingQueue } (3)]
-            // closure: [dd: 2]
-            self._generateContacts(count) { result in // operation: [rd: { init count, init completion } (2)]
-                defer {
-                    mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactGenerationSignpostName)
-                }
+
+    func generateContacts(_ count: Int, completion: @escaping GenerationCompletion) { // 1. rinda
+        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactGenerationSignpostName) // rinda netiek skaitīta
+
+        workingQueue.async { // 2. rinda
+
+            self._generateContacts(count) { result in // 3. rinda
+                defer { // rinda netiek skaitīta
+                    mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactGenerationSignpostName) // rinda netiek skaitīta
+                } // rinda netiek skaitīta
                 
-                completion(result) // [rd: { init completion, init result } (2)]
-            }
-        }
-    } // [lines: 18]
+                completion(result) // 4. rinda
+            } // 5. rinda
+        } // 6. rinda
+    } // 7. rinda
     
     // [dd: 14]
     private func _generateContacts(_ count: Int, completion: @escaping GenerationCompletion) {

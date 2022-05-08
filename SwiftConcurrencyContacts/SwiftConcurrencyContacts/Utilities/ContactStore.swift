@@ -9,7 +9,7 @@
  
  MEANINGFUL LINES OF CODE: 161
  
- TOTAL DEPENDENCY DEGREE: 84
+ TOTAL DEPENDENCY DEGREE: 83
  
  */
 
@@ -118,7 +118,7 @@ actor ContactStore { // [lines: 6]
         storeContacts([contact]) // [rd: { init contact } (1)]
     } // [lines: 67]
     
-    // [dd: 17]
+    // [dd: 16]
     func storeContacts(_ contacts: [Contact]) {
         guard isLoaded else { // [rd: { init isLoaded } (1)]
             fatalError()
@@ -126,7 +126,7 @@ actor ContactStore { // [lines: 6]
         
         var updated = false
         
-        for contact in contacts { // [rd: { init contacts } (1)]
+        for contact in contacts {
             if contactMap.keys.contains(contact.identifier) { // [rd: { init contactMap.keys, (contactMap[contact.identifier] = ...) x 2, (for contact).identifier } (4)]
                 if contact != contactMap[contact.identifier]! { // [rd: { (for contact), (for contact).identifier, init contactMap, (contactMap[contact.identifier] = ...) x 2 } (5)]
                     contactMap[contact.identifier] = contact // [rd: { (for contact) } (1)]

@@ -9,7 +9,7 @@
  
  MEANINGFUL LINES OF CODE: 116
  
- TOTAL DEPENDENCY DEGREE: 89
+ TOTAL DEPENDENCY DEGREE: 87
  
  */
 
@@ -69,7 +69,7 @@ class FileArchiver { // [lines: 5]
         
         var operations: [Operation] = [archiveOperation] // [rd: { let archiveOperation } (1)]
         
-        for index in archivables.indices { // [rd: { init archivables.indices } (1)]
+        for index in archivables.indices {
             // closure: [dd: 5]
             let operation = AsyncBlockOperation { operationCompletion in // [rd: { init archivables, (for index), var urls, urls[index] = url } (4)]
                 // closure: [dd: 2]
@@ -136,7 +136,7 @@ class FileArchiver { // [lines: 5]
         return resultFile // [rd: { let resultFile } (1)]
     } // [lines: 85]
     
-    // [dd: 22]
+    // [dd: 21]
     private func storeContentsAtTempLocation(_ urls: [URL]) -> URL? {
         Logger.d("Storing contents at temporary directory") // [rd: { init Logger } (1)]
         
@@ -151,7 +151,7 @@ class FileArchiver { // [lines: 5]
         
         var contentStored = false
         
-        for url in urls { // [rd: { init urls } (1)]
+        for url in urls {
             var isDirectory: ObjCBool = false
             
             if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) { // [rd: { init FileManager.default, (for url).path, var isDirectory } (3)]

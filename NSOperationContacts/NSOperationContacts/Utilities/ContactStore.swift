@@ -9,7 +9,7 @@
  
  MEANINGFUL LINES OF CODE: 202
  
- TOTAL DEPENDENCY DEGREE: 112
+ TOTAL DEPENDENCY DEGREE: 111
  
  */
 
@@ -175,7 +175,7 @@ class ContactStore { // [lines: 7]
     func storeContacts(_ contacts: [Contact]) {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
         
-        // closure: [dd: 17]
+        // closure: [dd: 16]
         let operation = BlockOperation { [self] in // [rd: { init contacts } (1)]
             defer {
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
@@ -187,7 +187,7 @@ class ContactStore { // [lines: 7]
             
             var updated = false
             
-            for contact in contacts { // [rd: { init contacts } (1)]
+            for contact in contacts {
                 if contactMap.keys.contains(contact.identifier) { // [rd: { init contactMap.keys, (contactMap[contact.identifier] = ...) x 2, (for contact).identifier } (4)]
                     if contact != contactMap[contact.identifier]! { // [rd: { (for contact), (for contact).identifier, init contactMap, (contactMap[contact.identifier] = ...) x 2 } (5)]
                         contactMap[contact.identifier] = contact // [rd: { (for contact) } (1)]
