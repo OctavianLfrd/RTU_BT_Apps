@@ -9,7 +9,7 @@
  
  MEANINGFUL LINES OF CODE: 110
  
- TOTAL DEPENDENCY DEGREE: 178
+ TOTAL DEPENDENCY DEGREE: 179
  
  */
 
@@ -27,7 +27,7 @@ class ParallelMergeSorter<T> { // [lines: 2]
         self.queue = sortQueue ?? DispatchQueue(label: "ParallelMergeSorter.Queue", qos: .utility, attributes: .concurrent, target: .global(qos: .utility)) // [rd: { init sortQueue } (1)]
     } // [lines: 7]
     
-    // [dd: 37]
+    // [dd: 38]
     func sort(_ array: [T], parallelismLevel: Int = ProcessInfo.processInfo.processorCount, comparator: @escaping Comparator, completion: @escaping ([T]) -> Void) -> CancellationHandle {
         var array = array // [rd: { init array } (1)]
         let chunksEqual = array.count % parallelismLevel == 0 // [rd: { (var array).count, init parallelismLevel } (2)]
@@ -42,7 +42,7 @@ class ParallelMergeSorter<T> { // [lines: 2]
         var i = 0
         while i < array.count { // [rd: { var i, i += limit, (var array).count } (3)]
             let begin = i // [rd: { var i, i += limit } (2)]
-            let remaining = array.count - i // [rd: { (var array).count, while i } (2)]
+            let remaining = array.count - i // [rd: { (var array).count, var i, i += limit } (3)]
             let end = remaining < limit ? (i + remaining - 1) : (i + limit - 1) // [rd: { let remaining, let limit, var i, i += limit } (4)]
             
             // closure: [dd: 9]

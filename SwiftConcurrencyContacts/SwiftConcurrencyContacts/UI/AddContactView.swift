@@ -58,19 +58,26 @@ struct AddContactView: View {
      
      MEANINGFUL LINES OF CODE: 12
      
+     TOTAL DEPENDENCY DEGREE: 13
+     
      */
     
+    // [dd: 5]
     private func saveContact() {
         let contact = Contact(identifier: UUID().uuidString,
                               firstName: firstName,
                               lastName: lastName,
-                              phoneNumbers: phoneNumbers.filter { !$0.value.isEmpty }.map { LabeledValue(label: $0.label, value: $0.value) },
-                              emailAddresses: emailAddresses.filter { !$0.value.isEmpty }.map { LabeledValue(label: $0.label, value: $0.value) },
-                              flags: [])
+                              // closure #1: [dd: 1]; closure #2: [dd: 2]
+                              phoneNumbers: phoneNumbers.filter { !$0.value.isEmpty /* [rd: { init $0.value } (1)] */}.map { LabeledValue(label: $0.label, value: $0.value) /* [rd: { init $0.label, $0.value } (2)] */},
+                              // closure #1: [dd: 1]; closure #2: [dd: 2]
+                              emailAddresses: emailAddresses.filter { !$0.value.isEmpty /* [rd: { init $0.value } (1)] */}.map { LabeledValue(label: $0.label, value: $0.value) /* [rd: { init $0.label, $0.value } (2)] */},
+                              flags: []) // [rd: { init firstName, init lastName, init phoneNumbers, init emailAddresses } (4)]
         
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
-        Task(priority: .low) {
-            await ContactStore.shared.storeContact(contact)
+        
+        // closure: [dd: 2]
+        Task(priority: .low) { // [rd: { let contact } (1)]
+            await ContactStore.shared.storeContact(contact) // [rd: { init ContactStore.shared, init contact } (2)]
             mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
         }
         

@@ -97,7 +97,7 @@ class ContactStore { // [lines: 7]
             
             // closure: [dd: 2]
             if let index = listeners.firstIndex(where: { $0.listener === listener } /* [rd: { init $0.listener, let listener } (2)] */ ) { // [rd: { init listeners, let listener } (2)]
-                listeners.remove(at: index) // [rd: { init listeners, let listener } (2)]
+                listeners.remove(at: index) // [rd: { init listeners, let index } (2)]
             }
         }
         

@@ -9,7 +9,7 @@
  
  MEANINGFUL LINES OF CODE: 121
  
- TOTAL DEPENDENCY DEGREE: 72
+ TOTAL DEPENDENCY DEGREE: 73
  
  */
 
@@ -35,13 +35,13 @@ class ContactImporter { // [lines: 4]
         operationQueue.maxConcurrentOperationCount = 1
     } // [lines: 14]
     
-    // [dd: 14]
+    // [dd: 15]
     func importContacts(completion: @escaping ImportCompletion) {
         Logger.i("Contact import started") // [rd: { init Logger } (1)]
         
         let authorizationStatus = CNContactStore.authorizationStatus(for: .contacts) // [rd: { init CNContactStore } (1)]
         
-        switch authorizationStatus {
+        switch authorizationStatus { // [rd: { let authorizationStatus } (1)]
         case .authorized:
             Logger.i("Contact import authorized, proceeding") // [rd: { init Logger } (1)]
             
