@@ -45,7 +45,7 @@ class ParallelMergeSorter<T> { // [lines: 2]
             let remaining = array.count - i // [rd: { (var array).count, while i } (2)]
             let end = remaining < limit ? (i + remaining - 1) : (i + limit - 1) // [rd: { let remaining, let limit, var i, i += limit } (4)]
             
-            // closure: [dd: 12]
+            // closure: [dd: 9]
             queue.async { [weak self] in // [rd: { init queue, let completionWorkItem, var array, self.mergeSort(&array, ...), let begin, let end, init comparator } (7)]
                 guard let self = self, !completionWorkItem.isCancelled else { // [rd: { weak self, init completionWorkItem.isCancelled } (2)]
                     return
@@ -57,7 +57,7 @@ class ParallelMergeSorter<T> { // [lines: 2]
             i += limit // [rd: { var i, i += limit, let limit } (3)]
         }
         
-        // closure: [dd: 24]
+        // closure: [dd: 27]
         queue.async(execute: DispatchWorkItem(flags: .barrier) { [weak self] in // [rd: { init queue, let completionWorkItem, var array, self.mergeSort(&array, ...), init comparator, let limit } (6)]
             guard let self = self, !completionWorkItem.isCancelled else { // [rd: { weak self, init completionWorkItem.isCancelled } (2)]
                 return

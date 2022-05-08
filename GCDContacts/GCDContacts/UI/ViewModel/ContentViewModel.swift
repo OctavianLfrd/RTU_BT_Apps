@@ -9,7 +9,7 @@
  
  MEANINGFUL LINES OF CODE: 118
  
- TOTAL DEPENDENCY DEGREE: 60
+ TOTAL DEPENDENCY DEGREE: 62
  
  */
 
@@ -127,7 +127,7 @@ class ContentViewModel : ObservableObject { // [lines: 4]
             
             // closure: [dd: 3]
             sortCancellationHandle = contactSorter.sort(contacts, comparator: getSortComparator()) { contacts in // [rd: { init contacts, init completion } (2)]
-                // closure: [dd: 3]
+                // closure: [dd: 4]
                 DispatchQueue.main.async { [weak self] in // [rd: { init DispatchQueue.main, init contacts, init completion } (3)]
                     
                     mxSignpost(.end, log: MetricObserver.parallelSortingLogHandle, name: MetricObserver.contactSortingSignpostName)
@@ -136,7 +136,7 @@ class ContentViewModel : ObservableObject { // [lines: 4]
                         return
                     }
                     
-                    self.sortCancellationHandle = nil
+                    self.sortCancellationHandle = nil // [rd: { let self } (1)]
                     completion(contacts) // [rd: { init completion, init contacts } (2)]
                 }
             }
@@ -181,13 +181,13 @@ extension ContentViewModel : ContactStoreListener {
             // closure: [dd: 2]
             self.sortContacts(contacts) { contacts in // [rd: { let self, init contacts } (2)]
                 
-                // closure: [dd: 2]
-                DispatchQueue.main.async { [weak self] in // [rd: { init contacts, init DispatchQueue } (2)]
+                // closure: [dd: 3]
+                DispatchQueue.main.async { [weak self] in // [rd: { init contacts, init DispatchQueue.main } (2)]
                     guard let self = self else { // [rd: { weak self } (1)]
                         return
                     }
                     
-                    self.isLoading = false
+                    self.isLoading = false // [rd: { let self } (1)]
                     self.contacts = contacts // [rd: { init contacts } (1)]
                 }
             }

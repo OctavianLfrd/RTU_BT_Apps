@@ -9,7 +9,7 @@
  
  MEANINGFUL LINES OF CODE: 188
  
- TOTAL DEPENDENCY DEGREE: 111
+ TOTAL DEPENDENCY DEGREE: 110
  
  */
 
@@ -103,7 +103,7 @@ class ContactStore { // [lines: 6]
     func load() {
         mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
         
-        // closure: [dd: 11]
+        // closure: [dd: 10]
         interactiveQueue.async { [self] in // [rd: { init interactiveQueue } (1)]
             defer {
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreLoadingSignpostName)
@@ -155,10 +155,10 @@ class ContactStore { // [lines: 6]
     
     // [dd: 2]
     func storeContacts(_ contacts: [Contact]) {
+        mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
+        
         // closure: [dd: 17]
         utilityQueue.async { [self] in // [rd: { init utilityQueue, init contacts } (2)]
-            mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
-            
             defer {
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
             }

@@ -64,7 +64,7 @@ class ContactGenerator { // [lines: 3]
         
         Logger.i("Contact generation started [count=\(count)]") // [rd: { init count, init Logger } (2)]
         
-        // closure: [dd: 15]
+        // closure: [dd: 14]
         URLSession.shared.dataTask(with: request) { [self] data, response, error in // [rd: { request = createUserFetchRequest(count), init completion, init URLSession.shared } (3)]
             
             // [dd: 3]
@@ -94,7 +94,7 @@ class ContactGenerator { // [lines: 3]
             }
             
             do {
-                let userResponse = try JSONDecoder().decode(UserResponse.self, from: data) // [rd: { try JSONDecoder(), let data = data } (2)]
+                let userResponse = try JSONDecoder().decode(UserResponse.self, from: data) // [rd: { let data = data } (1)]
                 Logger.i("Contact generation succeeded") // [rd: { init Logger } (1)]
                 
                 // closure: [dd: 4]
@@ -123,14 +123,14 @@ class ContactGenerator { // [lines: 3]
         return request // [rd: { var request } (1)]
     } // [lines: 73]
     
-    // [dd: 1]
+    // [dd: 2]
     private func composeUserFetchUrl(_ count: Int) -> URL? {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "randomuser.me"
         components.path = "/api/"
         components.queryItems = [ URLQueryItem(name: "results", value: String(count)) ] // [rd: { init count } (1)]
-        return components.url
+        return components.url // [rd: { var components } (1)]
     } // [lines: 81]
     
     struct PendingRequest {

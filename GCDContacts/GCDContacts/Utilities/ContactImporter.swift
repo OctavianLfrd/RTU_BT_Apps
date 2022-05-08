@@ -9,7 +9,7 @@
  
  MEANINGFUL LINES OF CODE: 116
  
- TOTAL DEPENDENCY DEGREE: 72
+ TOTAL DEPENDENCY DEGREE: 71
  
  */
 
@@ -41,7 +41,7 @@ class ContactImporter { // [lines: 4]
             
             mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactImportSignpostName)
             
-            // closure: [dd: 2]
+            // closure: [dd: 1]
             queue.async { [self] in // [rd: { init completion, init queue } (2)]
                 // closure: [dd: 2]
                 _importContacts(CNContactStore()) { result in // [rd: { init completion } (1)]

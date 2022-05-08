@@ -9,6 +9,8 @@
  
  MEANINGFUL LINES OF CODE: 121
  
+ TOTAL DEPENDENCY DEGREE: 72
+ 
  */
 
 import Foundation
@@ -25,91 +27,102 @@ class ContactImporter { // [lines: 4]
     private let operationQueue: OperationQueue
     private let underlyingQueue: DispatchQueue // [lines: 8]
     
+    // [dd: 1]
     private init() {
         underlyingQueue = DispatchQueue(label: "ContactImporter.Queue", qos: .userInitiated, target: .global(qos: .userInitiated))
         operationQueue = OperationQueue()
-        operationQueue.underlyingQueue = underlyingQueue
+        operationQueue.underlyingQueue = underlyingQueue // [rd: { init underlyingQueue } (1)]
         operationQueue.maxConcurrentOperationCount = 1
     } // [lines: 14]
     
+    // [dd: 14]
     func importContacts(completion: @escaping ImportCompletion) {
-        Logger.i("Contact import started")
+        Logger.i("Contact import started") // [rd: { init Logger } (1)]
         
-        let authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
+        let authorizationStatus = CNContactStore.authorizationStatus(for: .contacts) // [rd: { init CNContactStore } (1)]
         
         switch authorizationStatus {
         case .authorized:
-            Logger.i("Contact import authorized, proceeding")
+            Logger.i("Contact import authorized, proceeding") // [rd: { init Logger } (1)]
             
             mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactImportSignpostName)
             
-            operationQueue.addOperation { [self] in
-                _importContacts(CNContactStore()) { result in
+            // closure: [dd: 1]
+            operationQueue.addOperation { [self] in // [rd: { init operationQueue, init completion } (2)]
+                // closure: [dd: 2]
+                _importContacts(CNContactStore()) { result in // [rd: { init completion } (1)]
                     defer {
                         mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactImportSignpostName)
                     }
                     
-                    completion(result)
+                    completion(result) // [rd: { init completion, init result } (2)]
                 }
             }
         case .notDetermined:
-            Logger.i("Contact import authorization status notDetermined, requesting permission")
+            Logger.i("Contact import authorization status notDetermined, requesting permission") // [rd: { init Logger } (1)]
             
             let contactStore = CNContactStore()
-            contactStore.requestAccess(for: .contacts) { [self] granted, error in
-                guard granted && error == nil else {
-                    Logger.i("Contact import permission granted, importing contacts")
-                    completion(.permissionDeniedExplicitly)
+            
+            // closure: [dd: 9]
+            contactStore.requestAccess(for: .contacts) { [self] granted, error in // [rd: { let contactStore, init completion } (2)]
+                guard granted && error == nil else { // [rd: { init granted, init error } (2)]
+                    Logger.v("Contact import permission denied [granted=\(granted), error=\(String(describing: error))]") // [rd: { init Logger, init granted, init error } (3)]
+                    completion(.permissionDeniedExplicitly) // [rd: { init completion } (1)]
                     return
                 }
                 
                 mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactImportSignpostName)
                 
-                operationQueue.addOperation { [self] in
-                    Logger.i("Contact import permission granted, importing contacts")
-                    _importContacts(contactStore) { result in
+                // closure: [dd: 3]
+                operationQueue.addOperation { [self] in // [rd: { init operationQueue, init completion, init contactStore } (3)]
+                    Logger.i("Contact import permission granted, importing contacts") // [rd: { init Logger } (1)]
+                    
+                    // closure: [dd: 2]
+                    _importContacts(contactStore) { result in // [rd: { init contactStore, init completion } (2)]
                         defer {
                             mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactImportSignpostName)
                         }
                         
-                        completion(result)
+                        completion(result) // [rd: { init completion, init result } (2)]
                     }
                 }
             }
         case .denied,
              .restricted:
-            Logger.v("Contact import permission not granted [status=\(authorizationStatus.rawValue)]")
-            completion(.permissionDenied)
+            Logger.v("Contact import permission not granted [status=\(authorizationStatus.rawValue)]") // [rd: { init Logger, (let authorizationStatus).rawValue } (2)]
+            completion(.permissionDenied) // [rd: { init completion } (1)]
         @unknown default:
-            Logger.e("Contact import permission status unknown")
-            completion(.permissionDenied)
+            Logger.e("Contact import permission status unknown") // [rd: { init Logger } (1)]
+            completion(.permissionDenied) // [rd: { init completion } (1)]
         }
     } // [lines: 50]
     
+    // [dd: 15]
     private func _importContacts(_ store: CNContactStore, completion: ImportCompletion) {
         let keys = [
             CNContactGivenNameKey,
             CNContactFamilyNameKey,
             CNContactEmailAddressesKey,
             CNContactPhoneNumbersKey
-        ]
+        ] // [rd: { init CNContactGivenNameKey, ... } (4)]
         
-        let fetchRequest = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor])
+        let fetchRequest = CNContactFetchRequest(keysToFetch: keys as [CNKeyDescriptor]) // [rd: { let keys } (1)]
         
         do {
             var contacts = [Contact]()
             
-            try store.enumerateContacts(with: fetchRequest) { contact, _ in
-                let appContact = Contact(contact)
-                contacts.append(appContact)
-                Logger.v("Imported contact=\(appContact)")
+            // closure: [dd: 6]
+            try store.enumerateContacts(with: fetchRequest) { contact, _ in // [rd: { init store, let fetchRequest, var contacts } (3)]
+                let appContact = Contact(contact) // [rd: { init contact } (1)]
+                contacts.append(appContact) // [rd: { var contacts, try store.enumerateContacts, let appContact } (3)]
+                Logger.v("Imported contact=\(appContact)") // [rd: { init Logger, let appContact } (2)]
             }
             
-            Logger.i("Contact import succeeded")
-            completion(.success(contacts: contacts))
+            Logger.i("Contact import succeeded") // [rd: { init Logger } (1)]
+            completion(.success(contacts: contacts)) // [rd: { init completion, var contacts, try store.enumerateContacts } (3)]
         } catch {
-            Logger.e("Contact import failed [error=\(error)]")
-            completion(.failed)
+            Logger.e("Contact import failed [error=\(error)]") // [rd: { init Logger, init error } (2)]
+            completion(.failed) // [rd: { init completion } (1)]
         }
     } // [lines: 72]
     
@@ -145,28 +158,33 @@ private extension Contact {
         CNLabelOther : Contact.emailLabelOther
     ]
     
+    // [dd: 5]
     init(_ contact: CNContact) {
-        self.identifier = contact.identifier
-        self.firstName = contact.givenName
-        self.lastName = contact.familyName
-        self.phoneNumbers = contact.phoneNumbers.map { LabeledValue(label: Self.mapPhoneNumberLabel($0.label), value: $0.value.stringValue) }
-        self.emailAddresses = contact.emailAddresses.map { LabeledValue(label: Self.mapEmailLabel($0.label), value: $0.value as String) }
+        self.identifier = contact.identifier // [rd: { init contact.identifier } (1)]
+        self.firstName = contact.givenName // [rd: { init contact.givenName } (1)]
+        self.lastName = contact.familyName // [rd: { init contact.familyName } (1)]
+        // closure: [dd: 2]
+        self.phoneNumbers = contact.phoneNumbers.map { LabeledValue(label: Self.mapPhoneNumberLabel($0.label), value: $0.value.stringValue) /* [rd: { init $0.label, init $0.value } (2)] */ } // [rd: { contact.phoneNumbers } (1)]
+        // closure: [dd: 2]
+        self.emailAddresses = contact.emailAddresses.map { LabeledValue(label: Self.mapEmailLabel($0.label), value: $0.value as String) /* [rd: { init $0.label, init $0.value } (2)] */ } // [rd: { contact.emailAddresses } (1)]
         self.flags = .imported
     }
     
+    // [dd: 5]
     private static func mapPhoneNumberLabel(_ cnLabel: String?) -> String {
-        guard let cnLabel = cnLabel else {
-            return Contact.phoneNumberLabelOther
+        guard let cnLabel = cnLabel else { // [rd: { init cnLabel } (1)]
+            return Contact.phoneNumberLabelOther // [rd: { init Contact.phoneNumberLabelOther } (1)]
         }
 
-        return Self.phoneNumberLabelMap[cnLabel] ?? Contact.phoneNumberLabelOther
+        return Self.phoneNumberLabelMap[cnLabel] ?? Contact.phoneNumberLabelOther // [rd: { init Self.phoneNumberLabelMap, let cnLabel, Contact.phoneNumberLabelOther } (3)]
     }
     
+    // [dd: 5]
     private static func mapEmailLabel(_ cnLabel: String?) -> String {
-        guard let cnLabel = cnLabel else {
-            return Contact.emailLabelOther
+        guard let cnLabel = cnLabel else { // [rd: { init cnLabel } (1)]
+            return Contact.emailLabelOther // [rd: { init Contact.emailLabelOther } (1)]
         }
 
-        return Self.emailLabelMap[cnLabel] ?? Contact.emailLabelOther
+        return Self.emailLabelMap[cnLabel] ?? Contact.emailLabelOther // [rd: { init Self.emailLabelMap, let cnLabel, Contact.emailLabelOther } (3)]
     }
 } // [lines: 121]
