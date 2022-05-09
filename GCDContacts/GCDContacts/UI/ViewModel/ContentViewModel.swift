@@ -59,7 +59,7 @@ class ContentViewModel : ObservableObject { // [lines: 4]
     // [dd: 1]
     func generateContacts() {
         // closure: [dd: 3]
-        ContactGenerator.shared.generateContacts(100) { result in // [rd: { init ContactGenerator.shared } (1)]
+        ContactGenerator.shared.generateContacts(200) { result in // [rd: { init ContactGenerator.shared } (1)]
             guard case let .success(contacts) = result else { // [rd: { init result } (1)]
                 return
             }

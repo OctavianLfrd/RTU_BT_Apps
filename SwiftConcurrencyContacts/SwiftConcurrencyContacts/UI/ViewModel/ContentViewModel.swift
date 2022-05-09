@@ -63,7 +63,7 @@ class ContentViewModel : ObservableObject { // [lines: 5]
     func generateContacts() {
         // closure: [dd: 3]
         Task(priority: .high) {
-            if let contacts = try? await ContactGenerator.shared.generateContacts(100) { // [rd: { init ContactGenerator } (1)]
+            if let contacts = try? await ContactGenerator.shared.generateContacts(200) { // [rd: { init ContactGenerator } (1)]
                 mxSignpost(.begin, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
                 await ContactStore.shared.storeContacts(contacts) // [rd: { init ContactStore.shared, let contacts } (2)]
                 mxSignpost(.end, log: MetricObserver.contactOperationsLogHandle, name: MetricObserver.contactStoreStoring)
