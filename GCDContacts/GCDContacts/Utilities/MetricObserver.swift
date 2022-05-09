@@ -24,7 +24,6 @@ class MetricObserver : NSObject {
     static let contactImportSignpostName: StaticString = "ContactImport"
     static let contactGenerationSignpostName: StaticString = "ContactGeneration"
     static let contactStoreLoadingSignpostName: StaticString = "ContactStoreLoading"
-    static let contactStoreFetching: StaticString = "ContactStoreFetching"
     static let contactStoreStoring: StaticString = "ContactStoreStoring"
     static let contactStoreDeleting: StaticString = "ContactStoreDeleting"
     static let contactStoreTimerFrequency: StaticString = "ContactStoreTimerFrequency"
