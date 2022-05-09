@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B6B93B102817448E00737F4E"
-               BuildableName = "SwiftConcurrencyContacts.app"
-               BlueprintName = "SwiftConcurrencyContacts"
-               ReferencedContainer = "container:SwiftConcurrencyContacts.xcodeproj">
+               BlueprintIdentifier = "B67181CE2810762A008CFB14"
+               BuildableName = "NSOperationContacts.app"
+               BlueprintName = "NSOperationContacts"
+               ReferencedContainer = "container:NSOperationContacts.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,19 +46,12 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B6B93B102817448E00737F4E"
-            BuildableName = "SwiftConcurrencyContacts.app"
-            BlueprintName = "SwiftConcurrencyContacts"
-            ReferencedContainer = "container:SwiftConcurrencyContacts.xcodeproj">
+            BlueprintIdentifier = "B67181CE2810762A008CFB14"
+            BuildableName = "NSOperationContacts.app"
+            BlueprintName = "NSOperationContacts"
+            ReferencedContainer = "container:NSOperationContacts.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "LIBDISPATCH_COOPERATIVE_POOL_STRICT"
-            value = "1"
-            isEnabled = "NO">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -70,10 +63,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B6B93B102817448E00737F4E"
-            BuildableName = "SwiftConcurrencyContacts.app"
-            BlueprintName = "SwiftConcurrencyContacts"
-            ReferencedContainer = "container:SwiftConcurrencyContacts.xcodeproj">
+            BlueprintIdentifier = "B67181CE2810762A008CFB14"
+            BuildableName = "NSOperationContacts.app"
+            BlueprintName = "NSOperationContacts"
+            ReferencedContainer = "container:NSOperationContacts.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
