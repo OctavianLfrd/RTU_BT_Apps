@@ -9,7 +9,7 @@
  
  MEANINGFUL LINES OF CODE: 102
  
- TOTAL DEPENDENCY DEGREE: 173
+ TOTAL DEPENDENCY DEGREE: 172
  
  */
 
@@ -52,11 +52,11 @@ class ParallelMergeSorter<T> { // [lines: 2]
                 begin += limit // [rd: { var begin, begin += limit, let limit } (3)]
             }
             
-            // closure: [dd: 4]
+            // closure: [dd: 3]
             var array: [T] = try await { // [rd: { init group, var i, i += 1 } (3)]
                 var subArrayChunks = Array<[T]>.init(repeating: [], count: i) // [rd: { init i } (1)]
                 
-                for try await result in group { // [rd: { init group } (1)]
+                for try await result in group {
                     subArrayChunks[result.index] = result.array // [rd: { init result.array } (1)]
                 }
                 

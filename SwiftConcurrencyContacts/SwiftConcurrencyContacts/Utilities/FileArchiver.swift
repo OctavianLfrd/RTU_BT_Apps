@@ -9,7 +9,7 @@
  
  MEANINGFUL LINES OF CODE: 92
  
- TOTAL DEPENDENCY DEGREE: 61
+ TOTAL DEPENDENCY DEGREE: 60
  
  */
 
@@ -36,7 +36,7 @@ actor FileArchiver { // [lines: 5]
     func archive(_ archivables: [Archivable]) async -> URL? {
         Logger.i("Archiving contents") // [rd: { init Logger } (1)]
         
-        // closure: [dd: 12]
+        // closure: [dd: 11]
         return await withTaskGroup(of: URL?.self) { group in // [rd: { init archivables } (1)]
             for archivable in archivables {
                 // closure: [dd: 1]
@@ -47,7 +47,7 @@ actor FileArchiver { // [lines: 5]
             
             var urls = [URL]()
             
-            for await url in group where url != nil { // [rd: { init group, (for await url) } (2)]
+            for await url in group where url != nil { // [rd: { (for await url) } (1)]
                 urls.append(url!) // [rd: { var urls, urls.append(...), (for await url) } (3)]
             }
             
